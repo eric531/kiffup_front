@@ -1,0 +1,334 @@
+@import 'tailwindcss';
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   KiffUp — "Nuit de concert"
+   Dark immersive heroes, warm sunset gradient (orange → pink → violet),
+   light warm sections for reading. Fonts are bundled (no third-party request).
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@theme {
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display:
+    'Bricolage Grotesque Variable', 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+
+  /* Brand: KiffUp orange */
+  --color-brand-50: #fff7ed;
+  --color-brand-100: #ffedd5;
+  --color-brand-200: #fed7aa;
+  --color-brand-300: #fdba74;
+  --color-brand-400: #fb923c;
+  --color-brand-500: #f97316;
+  --color-brand-600: #ea580c;
+  --color-brand-700: #c2410c;
+  --color-brand-800: #9a3412;
+
+  /* Night: concert backgrounds */
+  --color-night-950: #07060f;
+  --color-night-900: #0e0c1d;
+  --color-night-800: #17142e;
+  --color-night-700: #241f45;
+  --color-night-600: #352e63;
+
+  /* Sunset accents */
+  --color-flare-400: #f472b6;
+  --color-flare-500: #ec4899;
+  --color-dusk-500: #8b5cf6;
+  --color-dusk-600: #7c3aed;
+  --color-gold-400: #fbbf24;
+
+  --color-ink: #1c1917;
+  --color-muted: #78716c;
+  --color-surface: #fbf8f4;
+
+  --radius-4xl: 2rem;
+
+  --shadow-glow: 0 10px 40px -10px rgb(249 115 22 / 0.55);
+  --shadow-card: 0 1px 2px rgb(28 25 23 / 0.04), 0 8px 24px -12px rgb(28 25 23 / 0.12);
+  --shadow-lift: 0 2px 4px rgb(28 25 23 / 0.04), 0 22px 40px -18px rgb(28 25 23 / 0.28);
+
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-blob: blob 18s ease-in-out infinite;
+  --animate-gradient: gradient-pan 8s ease infinite;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+  --animate-spotlight: spotlight 9s ease-in-out infinite;
+  --animate-pulse-ring: pulse-ring 2.4s cubic-bezier(0.2, 0.6, 0.35, 1) infinite;
+  --animate-fade-up: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-pop: pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-14px) rotate(1.5deg);
+    }
+  }
+  @keyframes blob {
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+    33% {
+      transform: translate(6%, -8%) scale(1.12);
+    }
+    66% {
+      transform: translate(-7%, 6%) scale(0.92);
+    }
+  }
+  @keyframes gradient-pan {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+  @keyframes shimmer {
+    from {
+      background-position: -200% 0;
+    }
+    to {
+      background-position: 200% 0;
+    }
+  }
+  @keyframes spotlight {
+    0%,
+    100% {
+      transform: rotate(-14deg);
+      opacity: 0.55;
+    }
+    50% {
+      transform: rotate(14deg);
+      opacity: 0.9;
+    }
+  }
+  @keyframes pulse-ring {
+    0% {
+      transform: scale(0.8);
+      opacity: 0.7;
+    }
+    100% {
+      transform: scale(2.2);
+      opacity: 0;
+    }
+  }
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: scale(0.85);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
+
+@utility btn {
+  @apply relative inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold
+    transition duration-200 ease-out select-none
+    focus-visible:ring-2 focus-visible:ring-brand-500/50 focus-visible:ring-offset-2 focus-visible:outline-none
+    active:scale-[0.97] disabled:pointer-events-none disabled:opacity-55;
+}
+
+@utility badge {
+  @apply inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold whitespace-nowrap
+    before:size-1.5 before:rounded-full before:bg-current before:content-[''];
+}
+
+@utility container-page {
+  @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+}
+
+@utility text-gradient {
+  @apply bg-gradient-to-r from-brand-400 via-flare-400 to-dusk-500 bg-clip-text text-transparent;
+  background-size: 200% auto;
+}
+
+@utility bg-sunset {
+  background-image: linear-gradient(
+    120deg,
+    var(--color-brand-500),
+    var(--color-flare-500) 55%,
+    var(--color-dusk-600)
+  );
+}
+
+@utility glass {
+  @apply border border-white/15 bg-white/10 backdrop-blur-xl;
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-surface font-sans text-ink antialiased;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+  ::selection {
+    @apply bg-brand-500 text-white;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-3xl border border-stone-200/80 bg-white p-5 shadow-card;
+  }
+  .card-hover {
+    @apply transition duration-300 ease-out hover:-translate-y-1 hover:border-brand-200 hover:shadow-lift;
+  }
+  .label {
+    @apply mb-1.5 block text-sm font-medium text-stone-700;
+  }
+  .input {
+    @apply block w-full rounded-2xl border border-stone-300 bg-white px-4 py-2.5 text-base text-ink shadow-sm
+      transition placeholder:text-stone-400
+      focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 focus:outline-none
+      disabled:bg-stone-100;
+  }
+  .input-error {
+    @apply mt-1.5 text-sm text-red-600;
+  }
+  .btn-primary {
+    @apply btn bg-sunset text-white shadow-glow hover:brightness-110 hover:shadow-[0_14px_44px_-10px_rgb(236_72_153_/_0.6)];
+    background-size: 200% auto;
+  }
+  .btn-secondary {
+    @apply btn border border-stone-300 bg-white text-ink shadow-sm hover:border-stone-400 hover:bg-stone-50;
+  }
+  .btn-ghost {
+    @apply btn text-stone-600 hover:bg-stone-100 hover:text-ink;
+  }
+  .btn-light {
+    @apply btn bg-white text-night-900 shadow-lg hover:bg-brand-50;
+  }
+  .btn-glass {
+    @apply btn glass text-white hover:bg-white/20;
+  }
+  .btn-danger {
+    @apply btn bg-red-600 text-white shadow-sm hover:bg-red-700;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold;
+  }
+  /* Status badges (back-office lists): coloured dot + label */
+  .badge-success {
+    @apply badge bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/15;
+  }
+  .badge-warning {
+    @apply badge bg-amber-50 text-amber-700 ring-1 ring-amber-600/20;
+  }
+  .badge-danger {
+    @apply badge bg-red-50 text-red-700 ring-1 ring-red-600/15;
+  }
+  .badge-info {
+    @apply badge bg-sky-50 text-sky-700 ring-1 ring-sky-600/15;
+  }
+  .badge-neutral {
+    @apply badge bg-stone-100 text-stone-600 ring-1 ring-stone-500/15;
+  }
+  /* Segmented filters */
+  .tabs {
+    @apply inline-flex shrink-0 gap-1 rounded-full border border-stone-200 bg-white p-1 shadow-sm;
+  }
+  .tab {
+    @apply rounded-full px-4 py-1.5 text-sm font-medium text-stone-600 transition hover:text-ink;
+  }
+  .tab-active {
+    @apply bg-night-900 text-white shadow-md hover:text-white;
+  }
+  .section-title {
+    @apply font-display text-lg font-bold;
+  }
+  /* "Découvrir" feed: reactions column and contact chips over the video */
+  .discover-action {
+    @apply flex flex-col items-center gap-1 text-xs font-semibold drop-shadow transition active:scale-90;
+  }
+  .discover-chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-semibold backdrop-blur transition active:scale-95;
+  }
+  /* Inline panel opened inside a card (process a withdrawal, cancel a booking…) */
+  .panel {
+    @apply space-y-3 rounded-2xl border border-stone-200 bg-surface p-4;
+  }
+  .alert-error {
+    @apply rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700;
+  }
+  .alert-success {
+    @apply rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800;
+  }
+  .alert-info {
+    @apply rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900;
+  }
+  .skeleton {
+    @apply rounded-2xl bg-stone-200;
+    background-image: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.65), transparent);
+    background-size: 200% 100%;
+    animation: var(--animate-shimmer);
+  }
+  /* Elements revealed on scroll (v-reveal directive) */
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(22px);
+    transition:
+      opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  [data-reveal='visible'] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Route transitions */
+.page-enter-active,
+.page-leave-active {
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+.page-leave-to {
+  opacity: 0;
+}
+
+/* People who asked their system for less motion get none. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+}
