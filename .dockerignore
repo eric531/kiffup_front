@@ -1,0 +1,10 @@
+.git
+node_modules
+dist
+dist-ssr
+coverage
+shots
+test-results
+playwright-report
+*.local
+*.log
