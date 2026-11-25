@@ -91,8 +91,14 @@ async function load() {
     conversation.value = response.data
     messages.value = response.messages
     hasMore.value = response.has_more ?? false
+    // First unread message: the last N messages of the other side (N = unread count).
+    const theirs = response.messages.filter((m) => m.sender !== props.side)
+    const unread = Math.min(response.data.unread, theirs.length)
+    firstUnreadId.value = unread > 0 ? (theirs[theirs.length - unread]?.id ?? null) : null
     watchOnline()
-    await scrollToBottom()
+    // The messages must be on screen before scrolling (they show once loading is over).
+    loading.value = false
+    await openAtUnread()
     void markRead()
   } catch (e) {
     loadError.value =
@@ -105,6 +111,33 @@ async function load() {
     loading.value = false
   }
 }
+
+/** "Nouveaux messages" line above the first unread one, kept for this visit. */
+const firstUnreadId = ref<number | null>(null)
+
+/** Opening: at the first unread message (like Messenger), otherwise at the bottom. */
+async function openAtUnread() {
+  await nextTick()
+  const el = list.value
+  const marker = firstUnreadId.value
+    ? el?.querySelector<HTMLElement>(`[data-message="${firstUnreadId.value}"]`)
+    : null
+  if (el && marker) {
+    // Just under the "Nouveaux messages" line.
+    el.scrollTop = Math.max(0, marker.offsetTop - 64)
+    return
+  }
+  await scrollToBottom()
+  // Photos load afterwards and push the content down: keep the bottom in view until the
+  // customer or the partner scrolls by hand.
+  el?.querySelectorAll('img').forEach((img) => {
+    if (!img.complete)
+      img.addEventListener('load', () => !userScrolled.value && void scrollToBottom(), {
+        once: true,
+      })
+  })
+}
+const userScrolled = ref(false)
 
 async function loadOlder() {
   const first = messages.value[0]
@@ -130,7 +163,8 @@ let readAgain = false
 async function markRead() {
   if (document.visibilityState !== 'visible') return
   const last = messages.value.at(-1)
-  if (!last || last.sender === props.side) return
+  // Nothing new from the other side (unread ones may sit before my own last message).
+  if (!last || (last.sender === props.side && !conversation.value?.unread)) return
   // A message arriving while the previous "read" is on its way: read again right after.
   if (readPending) {
     readAgain = true
@@ -139,6 +173,7 @@ async function markRead() {
   readPending = true
   try {
     await api.post(`${base.value}/${props.conversationId}/read`)
+    if (conversation.value) conversation.value.unread = 0
   } catch {
     // the next message will try again
   } finally {
@@ -668,7 +703,12 @@ function bubbleShape(row: Row): string {
     </p>
 
     <!-- Messages -->
-    <div ref="list" class="min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-5">
+    <div
+      ref="list"
+      class="relative min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-5"
+      @wheel.passive="userScrolled = true"
+      @touchmove.passive="userScrolled = true"
+    >
       <p v-if="loading" class="py-10 text-center text-sm text-muted">Chargement…</p>
       <p v-else-if="loadError" class="py-10 text-center text-sm text-red-600">{{ loadError }}</p>
       <template v-else>
@@ -705,7 +745,15 @@ function bubbleShape(row: Row): string {
           >
             {{ row.day }}
           </p>
+          <p
+            v-if="row.message.id === firstUnreadId"
+            class="my-3 flex items-center gap-3 text-xs font-semibold text-brand-700"
+          >
+            <span class="h-px flex-1 bg-brand-200" /> Nouveaux messages
+            <span class="h-px flex-1 bg-brand-200" />
+          </p>
           <div
+            :data-message="row.message.id"
             class="flex items-end gap-2"
             :class="[row.mine ? 'justify-end' : 'justify-start', row.first ? 'mt-3' : 'mt-0.5']"
             :title="row.time"

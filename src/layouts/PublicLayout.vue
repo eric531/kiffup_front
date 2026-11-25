@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, type RouteLocationRaw } from 'vue-router'
 import { Menu, MessagesSquare, X, UserRound, WifiOff } from 'lucide-vue-next'
 import BrandLogo from '@/components/BrandLogo.vue'
+import PaymentLogo from '@/components/PaymentLogo.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useMessagingStore } from '@/stores/messaging'
 
@@ -31,6 +32,13 @@ const links: { label: string; to: RouteLocationRaw }[] = [
   { label: 'Devenir partenaire', to: { name: 'become-partner' } },
 ]
 const year = new Date().getFullYear()
+const WALLETS = [
+  { code: 'wave', label: 'Wave' },
+  { code: 'orange', label: 'Orange Money' },
+  { code: 'mtn', label: 'MTN MoMo' },
+  { code: 'moov', label: 'Moov Money' },
+  { code: 'djamo', label: 'Djamo' },
+]
 
 // Visitors and customers: the customer account; partners and staff: their area.
 const accountLink = computed<{ to: RouteLocationRaw; label: string }>(() => {
@@ -166,11 +174,12 @@ const accountLink = computed<{ to: RouteLocationRaw; label: string }>(() => {
           </p>
           <div class="flex flex-wrap gap-2 text-xs">
             <span
-              v-for="m in ['Wave', 'Orange Money', 'MTN MoMo', 'Moov Money', 'Djamo']"
-              :key="m"
-              class="chip border border-white/10 bg-white/5 text-white/80"
+              v-for="m in WALLETS"
+              :key="m.code"
+              class="chip gap-1.5 border border-white/10 bg-white/5 py-1 pl-1 text-white/80"
             >
-              {{ m }}
+              <PaymentLogo :code="m.code" size="sm" />
+              {{ m.label }}
             </span>
           </div>
         </div>
