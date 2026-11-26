@@ -1,6 +1,6 @@
 # KiffUp front — production image: the Vue site built once, served by Caddy.
-# Built by event-stay/docker-compose.prod.yml, which also mounts the Caddy configuration
-# (event-stay/docker/production/caddy).
+# Built by docker-compose.prod.yml of the back-end repository (kiffup-backend on the server),
+# which also mounts the Caddy configuration (docker/production/caddy).
 FROM node:24-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
@@ -16,4 +16,6 @@ ENV VITE_DEVTOOLS=false
 RUN npm run build
 
 FROM caddy:2.10-alpine
+# Lets deploy.sh clean up only KiffUp's old images on a shared server.
+LABEL kiffup.app=web
 COPY --from=build /app/dist /srv/front
