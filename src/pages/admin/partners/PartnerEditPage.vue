@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { api } from '@/lib/api'
 import { formatRate } from '@/lib/format'
 import { useForm } from '@/composables/useForm'
@@ -18,13 +18,20 @@ import {
   type PartnerType,
   type PayoutMethod,
 } from '@/types/catalog'
-import { Clock3, Handshake, KeyRound, Pencil, UserRound } from 'lucide-vue-next'
+import {
+  BadgeCheck,
+  Clock3,
+  FileText,
+  Handshake,
+  KeyRound,
+  Pencil,
+  UserRound,
+} from 'lucide-vue-next'
 import OpeningHoursEditor from '@/components/OpeningHoursEditor.vue'
 import PageHeader from '@/components/PageHeader.vue'
 
 const props = defineProps<{ id?: string }>()
 const router = useRouter()
-const route = useRoute()
 
 const isNew = computed(() => !props.id)
 const partner = ref<Partner | null>(null)
@@ -88,7 +95,7 @@ function fill(data: Partner) {
     phone: data.phone,
     whatsapp: data.whatsapp ?? '',
     email: data.email ?? '',
-    city: data.city,
+    city: data.city ?? '',
     address: data.address ?? '',
     description: data.description ?? '',
     payout_method: data.payout_method ?? '',
@@ -105,40 +112,7 @@ function fill(data: Partner) {
 }
 
 async function load() {
-  if (props.id) {
-    fill((await api.get<{ data: Partner }>(`/api/v1/admin/partners/${props.id}`)).data)
-    return
-  }
-  // Accepted "Devenir partenaire" request (V3): the form starts from what the establishment sent.
-  const requestId = route.query.demande
-  if (typeof requestId !== 'string') return
-  const { data } = await api.get<{
-    data: {
-      business_name: string
-      category: PartnerType
-      contact_name: string
-      phone: string
-      email: string | null
-      city: string
-      address: string | null
-      message: string | null
-    }
-  }>(`/api/v1/admin/partner-requests/${requestId}`)
-  Object.assign(fields, {
-    name: data.business_name,
-    type: data.category,
-    // Places from "Découvrir" usually start as Vitrine; hotels and residences take bookings.
-    profile: ['hotel', 'residence', 'car_rental', 'parking'].includes(data.category)
-      ? 'bookable'
-      : 'showcase',
-    contact_name: data.contact_name,
-    phone: data.phone,
-    whatsapp: data.phone,
-    email: data.email ?? '',
-    city: data.city,
-    address: data.address ?? '',
-    description: data.message ?? '',
-  })
+  if (props.id) fill((await api.get<{ data: Partner }>(`/api/v1/admin/partners/${props.id}`)).data)
 }
 
 async function save() {
@@ -149,6 +123,7 @@ async function save() {
     contact_name: rest.contact_name || null,
     whatsapp: rest.whatsapp || null,
     email: rest.email || null,
+    city: rest.city || null,
     address: rest.address || null,
     description: rest.description || null,
     payout_method: rest.payout_method || null,
@@ -201,6 +176,19 @@ async function saveLogin() {
     editedLogin.id = 0
     accountSaved.value = true
   }
+}
+
+// Documents sent by the partner from "Ma fiche" (RG38): checked before its first withdrawal.
+const verificationForm = useForm()
+const documentUrl = (index: number) =>
+  `${import.meta.env.VITE_API_URL ?? ''}/api/v1/admin/partners/${props.id}/documents/${index}`
+
+async function setVerified(verified: boolean) {
+  const url = `/api/v1/admin/partners/${props.id}/verification`
+  const result = await verificationForm.submit(() =>
+    verified ? api.post<{ data: Partner }>(url) : api.delete<{ data: Partner }>(url),
+  )
+  if (result) partner.value = result.data
 }
 
 watch(() => props.id, load, { immediate: true })
@@ -274,8 +262,17 @@ watch(() => props.id, load, { immediate: true })
       <FormField label="Email" for="email" :error="form.fieldError('email')">
         <input id="email" v-model="fields.email" class="input" type="email" />
       </FormField>
-      <FormField label="Ville" for="city" :error="form.fieldError('city')">
-        <input id="city" v-model="fields.city" class="input" required />
+      <FormField
+        label="Ville"
+        for="city"
+        :error="form.fieldError('city')"
+        :hint="
+          !isNew && !fields.city
+            ? 'Pas encore indiquée par le partenaire (« Ma fiche »).'
+            : undefined
+        "
+      >
+        <input id="city" v-model="fields.city" class="input" :required="isNew" />
       </FormField>
       <FormField label="Adresse" for="address" :error="form.fieldError('address')">
         <input id="address" v-model="fields.address" class="input" />
@@ -354,6 +351,64 @@ watch(() => props.id, load, { immediate: true })
       <button class="btn-primary" :disabled="hoursForm.processing.value" @click="saveHours">
         Enregistrer les horaires
       </button>
+    </section>
+
+    <!-- Verification: documents sent from "Ma fiche", checked before the first withdrawal -->
+    <section v-if="partner" class="card space-y-4 p-6">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h2 class="section-title flex items-center gap-2">
+          <BadgeCheck class="size-5 text-brand-600" /> Vérification
+        </h2>
+        <span :class="partner.verified_at ? 'badge-success' : 'badge-warning'">
+          {{
+            partner.verified_at
+              ? 'Vérifié le ' + new Date(partner.verified_at).toLocaleDateString('fr-FR')
+              : 'À vérifier'
+          }}
+        </span>
+      </div>
+      <p class="text-sm text-muted">
+        Le partenaire envoie ses pièces depuis « Ma fiche » (RCCM ou pièce d’identité du gérant,
+        photo de la devanture). Ses retraits sont possibles une fois le partenaire vérifié.
+      </p>
+      <div v-if="verificationForm.error.value" class="alert-error">
+        {{ verificationForm.error.value }}
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <a
+          v-for="doc in partner.documents"
+          :key="doc.index"
+          :href="documentUrl(doc.index)"
+          target="_blank"
+          rel="noopener"
+          class="inline-flex items-center gap-1.5 rounded-full border border-stone-200 px-3 py-1.5 text-sm hover:border-stone-400"
+        >
+          <FileText class="size-4" /> {{ doc.name }}
+        </a>
+        <span v-if="partner.documents.length === 0" class="text-sm text-amber-700">
+          Aucune pièce envoyée pour l’instant.
+        </span>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button
+          v-if="!partner.verified_at"
+          type="button"
+          class="btn-primary px-4 py-2 text-sm"
+          :disabled="verificationForm.processing.value"
+          @click="setVerified(true)"
+        >
+          Marquer comme vérifié
+        </button>
+        <button
+          v-else
+          type="button"
+          class="btn-ghost px-4 py-2 text-sm text-red-700"
+          :disabled="verificationForm.processing.value"
+          @click="setVerified(false)"
+        >
+          Retirer la vérification
+        </button>
+      </div>
     </section>
 
     <!-- Login account -->

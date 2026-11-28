@@ -86,7 +86,7 @@ const initials = (name: string) =>
             <p class="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-sm text-muted">
               <span>{{ PARTNER_TYPE_LABELS[partner.type] }}</span>
               <span class="inline-flex items-center gap-1"
-                ><MapPin class="size-3.5" /> {{ partner.city }}</span
+                ><MapPin class="size-3.5" /> {{ partner.city ?? 'Ville à compléter' }}</span
               >
               <span class="inline-flex items-center gap-1"
                 ><Phone class="size-3.5" /> {{ partner.phone }}</span

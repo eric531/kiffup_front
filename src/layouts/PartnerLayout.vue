@@ -10,6 +10,7 @@ import {
   Package,
   ReceiptText,
   ScanLine,
+  Store,
   Wallet,
 } from 'lucide-vue-next'
 import AppShell from '@/components/AppShell.vue'
@@ -58,6 +59,7 @@ const items = computed<NavItem[]>(() =>
         messagesItem.value,
         { label: 'Mes vidéos', to: { name: 'partner.videos' }, icon: Clapperboard },
         { label: 'À la une', to: { name: 'partner.spotlight' }, icon: Crown },
+        { label: 'Ma fiche', to: { name: 'partner.profile' }, icon: Store },
       ]
     : [
         { label: 'Tableau de bord', to: { name: 'partner.dashboard' }, icon: LayoutDashboard },
@@ -66,6 +68,7 @@ const items = computed<NavItem[]>(() =>
         { label: 'Mes offres', to: { name: 'partner.listings' }, icon: Package },
         { label: 'Arrivées (scanner)', to: { name: 'partner.check-in' }, icon: ScanLine },
         { label: 'Mon solde', to: { name: 'partner.balance' }, icon: Wallet },
+        { label: 'Ma fiche', to: { name: 'partner.profile' }, icon: Store },
         { label: 'Mes horaires', to: { name: 'partner.hours' }, icon: Clock3 },
         { label: 'Mes vidéos', to: { name: 'partner.videos' }, icon: Clapperboard },
         { label: 'À la une', to: { name: 'partner.spotlight' }, icon: Crown },

@@ -216,6 +216,13 @@ export interface PartnerAccount {
   last_login_at: string | null
 }
 
+export interface PartnerDocument {
+  index: number
+  name: string
+  mime: string
+  size: number
+}
+
 export interface Partner {
   id: number
   name: string
@@ -228,7 +235,8 @@ export interface Partner {
   whatsapp: string | null
   email: string | null
   address: string | null
-  city: string
+  /** Null until the partner completes "Ma fiche" (short "Devenir partenaire" request). */
+  city: string | null
   latitude: number | null
   longitude: number | null
   payout_method: PayoutMethod | null
@@ -238,6 +246,9 @@ export interface Partner {
   /** Sessions are requested inside these hours (V3, lot F4). */
   opening_hours: OpeningRange[]
   closed_dates: string[]
+  /** Sent from "Ma fiche", checked by the team before the first withdrawal. */
+  documents: PartnerDocument[]
+  verified_at: string | null
   accounts: PartnerAccount[]
   created_at: string | null
 }

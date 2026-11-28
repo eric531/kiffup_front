@@ -10,8 +10,9 @@ import { formatShortDate } from '@/lib/format'
 import { PARTNER_TYPE_LABELS, type PartnerType } from '@/types/catalog'
 
 /**
- * "Devenir partenaire" requests (V3, P10): check the documents (RCCM or ID, storefront photo,
- * RG38), then create the partner from the request or refuse it.
+ * "Devenir partenaire" requests (V3, P10): short requests (establishment, activity, name, phone).
+ * The team calls back, then accepts in one click (partner record and login created, password chosen
+ * through WhatsApp) or refuses. The partner sends its documents from "Ma fiche" (RG38).
  */
 type RequestStatus = 'new' | 'accepted' | 'refused'
 interface PartnerRequest {
@@ -21,7 +22,7 @@ interface PartnerRequest {
   contact_name: string
   phone: string
   email: string | null
-  city: string
+  city: string | null
   address: string | null
   message: string | null
   documents: { index: number; name: string; mime: string; size: number }[]
@@ -65,18 +66,34 @@ async function load() {
   }
 }
 
-async function decide(request: PartnerRequest, decision: 'accepted' | 'refused') {
+const accepting = ref<number | null>(null)
+
+/** One click: the partner record and its login are created; the partner gets a WhatsApp message. */
+async function accept(request: PartnerRequest) {
+  error.value = null
+  accepting.value = request.id
+  try {
+    const { data } = await api.post<{ data: { id: number } }>(
+      `/api/v1/admin/partner-requests/${request.id}/accept`,
+    )
+    await router.push({ name: 'admin.partners.edit', params: { id: data.id } })
+  } catch (e) {
+    error.value =
+      e instanceof ApiError
+        ? (Object.values(e.errors)[0]?.[0] ?? e.detail ?? e.message)
+        : 'Action impossible.'
+  } finally {
+    accepting.value = null
+  }
+}
+
+async function refuse(request: PartnerRequest) {
   error.value = null
   try {
     await api.patch(`/api/v1/admin/partner-requests/${request.id}`, {
-      status: decision,
-      note: decision === 'refused' ? note.value || null : null,
+      status: 'refused',
+      note: note.value || null,
     })
-    if (decision === 'accepted') {
-      // The partner is created with the usual form, pre-filled from the request.
-      await router.push({ name: 'admin.partners.create', query: { demande: request.id } })
-      return
-    }
     refusing.value = null
     note.value = ''
     await load()
@@ -96,7 +113,7 @@ onMounted(load)
   <div class="space-y-6">
     <PageHeader
       title="Demandes de partenariat"
-      subtitle="Établissements uniquement : vérifiez les pièces (RCCM ou pièce d’identité du gérant, photo de la devanture) avant d’accepter."
+      subtitle="Établissements uniquement : appelez le gérant avant d’accepter. Il recevra un message WhatsApp pour choisir son mot de passe, puis complétera sa fiche et enverra ses pièces depuis son espace."
       :icon="UserPlus"
     />
 
@@ -146,13 +163,14 @@ onMounted(load)
         >
           <Mail class="size-4" /> {{ request.email }}
         </a>
-        <span class="inline-flex items-center gap-1.5">
+        <span v-if="request.city" class="inline-flex items-center gap-1.5">
           <MapPin class="size-4" /> {{ request.address ? `${request.address}, ` : ''
           }}{{ request.city }}
         </span>
       </div>
       <p v-if="request.message" class="text-sm whitespace-pre-line">{{ request.message }}</p>
-      <div class="flex flex-wrap gap-2">
+      <!-- Older requests only: documents are now sent from "Ma fiche". -->
+      <div v-if="request.documents.length" class="flex flex-wrap gap-2">
         <a
           v-for="doc in request.documents"
           :key="doc.index"
@@ -163,9 +181,6 @@ onMounted(load)
         >
           <FileText class="size-4" /> {{ doc.name }}
         </a>
-        <span v-if="request.documents.length === 0" class="text-sm text-amber-700">
-          Aucune pièce jointe : demandez-les avant d’accepter.
-        </span>
       </div>
       <p v-if="request.note" class="text-sm text-muted">Note : {{ request.note }}</p>
 
@@ -177,11 +192,7 @@ onMounted(load)
             placeholder="Motif (pour l’équipe, facultatif)"
           />
           <div class="flex gap-2">
-            <button
-              type="button"
-              class="btn-danger px-4 py-2 text-sm"
-              @click="decide(request, 'refused')"
-            >
+            <button type="button" class="btn-danger px-4 py-2 text-sm" @click="refuse(request)">
               Refuser la demande
             </button>
             <button type="button" class="btn-ghost px-4 py-2 text-sm" @click="refusing = null">
@@ -193,9 +204,10 @@ onMounted(load)
           <button
             type="button"
             class="btn-primary px-4 py-2 text-sm"
-            @click="decide(request, 'accepted')"
+            :disabled="accepting !== null"
+            @click="accept(request)"
           >
-            Accepter et créer le partenaire
+            {{ accepting === request.id ? 'Création…' : 'Accepter et créer le compte' }}
           </button>
           <button
             type="button"

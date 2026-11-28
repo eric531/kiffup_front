@@ -19,6 +19,7 @@ import {
   Upload,
 } from 'lucide-vue-next'
 import PageHeader from '@/components/PageHeader.vue'
+import PartnerProfileChecklist from '@/components/PartnerProfileChecklist.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import ListSkeleton from '@/components/ListSkeleton.vue'
 import FormField from '@/components/FormField.vue'
@@ -376,6 +377,7 @@ onMounted(() => {
       :icon="Clapperboard"
     />
 
+    <PartnerProfileChecklist v-if="partner" :partner="partner" />
     <div v-if="loadError" class="alert-error">{{ loadError }}</div>
 
     <!-- Back from the payment page -->

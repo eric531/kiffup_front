@@ -17,6 +17,7 @@ import { api } from '@/lib/api'
 import { formatEventDate, formatShortDate, formatXof } from '@/lib/format'
 import { LISTING_TYPE_GRADIENTS, LISTING_TYPE_ICONS } from '@/lib/icons'
 import DashboardHero from '@/components/DashboardHero.vue'
+import PartnerProfileChecklist from '@/components/PartnerProfileChecklist.vue'
 import StatCard from '@/components/StatCard.vue'
 import OccupancyGrid from '@/components/OccupancyGrid.vue'
 import {
@@ -137,6 +138,8 @@ onMounted(async () => {
           </div>
         </div>
       </DashboardHero>
+
+      <PartnerProfileChecklist :partner="partner" />
 
       <!-- Key figures -->
       <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -263,12 +266,17 @@ onMounted(async () => {
 
           <!-- Profile -->
           <section v-reveal="160" class="card space-y-3 text-sm">
-            <h2 class="font-display text-lg font-bold">Mon établissement</h2>
+            <div class="flex items-center justify-between gap-2">
+              <h2 class="font-display text-lg font-bold">Mon établissement</h2>
+              <RouterLink :to="{ name: 'partner.profile' }" class="btn-ghost px-3 py-1.5 text-sm">
+                Ma fiche
+              </RouterLink>
+            </div>
             <p class="flex items-center gap-2.5">
               <Phone class="size-4 text-brand-600" /> {{ partner.phone }}
             </p>
             <p class="flex items-center gap-2.5">
-              <MapPin class="size-4 text-brand-600" /> {{ partner.city }}
+              <MapPin class="size-4 text-brand-600" /> {{ partner.city ?? 'Ville à compléter' }}
             </p>
             <p class="flex items-start gap-2.5">
               <Wallet class="mt-0.5 size-4 shrink-0 text-brand-600" />

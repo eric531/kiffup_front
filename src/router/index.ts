@@ -227,6 +227,13 @@ const router = createRouter({
           props: (route) => ({ id: String(route.params.id), area: 'partner' }),
           meta: { title: 'Mon offre' },
         },
+        // Short "Devenir partenaire" request: the partner completes its record here.
+        {
+          path: 'fiche',
+          name: 'partner.profile',
+          component: () => import('@/pages/partner/PartnerProfilePage.vue'),
+          meta: { title: 'Ma fiche' },
+        },
         {
           path: 'horaires',
           name: 'partner.hours',

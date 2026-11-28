@@ -205,6 +205,9 @@ function cancelWithdrawal() {
             <template v-if="finance.payout.account"> · {{ finance.payout.account }}</template
             >. Minimum {{ formatXof(finance.min_withdrawal_amount) }}, frais de virement
             {{ feeLabel }} déduits.
+            <RouterLink :to="{ name: 'partner.profile' }" class="text-white underline">
+              Changer de numéro
+            </RouterLink>
           </p>
 
           <Transition

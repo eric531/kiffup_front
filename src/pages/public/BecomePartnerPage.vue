@@ -9,47 +9,23 @@ import { PARTNER_TYPE_LABELS, type PartnerType } from '@/types/catalog'
 import { PHONE_COUNTRIES } from '@/types/booking'
 
 /**
- * "Devenir partenaire" (V3, P10): establishments send their request with documents; the KiffUp
- * team checks them, then creates the partner account (no automatic sign-up, RG38).
+ * "Devenir partenaire" (V3, P10), kept short: establishment, activity, name and phone. The KiffUp
+ * team calls back and activates the account (no automatic sign-up, RG38); the partner then
+ * completes its record and sends its documents from "Ma fiche".
  */
-const MAX_DOCUMENTS = 4
 const fields = reactive({
   business_name: '',
   category: 'wellness' as PartnerType,
   contact_name: '',
   country: 'CI',
   phone: '',
-  email: '',
-  city: '',
-  address: '',
-  message: '',
 })
-const documents = ref<File[]>([])
-const documentsError = ref<string | null>(null)
 const charter = ref(false)
 const sent = ref(false)
 const form = useForm()
 
-function pickDocuments(event: Event) {
-  const files = Array.from((event.target as HTMLInputElement).files ?? [])
-  documentsError.value = null
-  if (files.length > MAX_DOCUMENTS) {
-    documentsError.value = `Au plus ${MAX_DOCUMENTS} documents.`
-    documents.value = files.slice(0, MAX_DOCUMENTS)
-    return
-  }
-  const tooBig = files.find((f) => f.size > 8 * 1024 * 1024)
-  documentsError.value = tooBig ? `« ${tooBig.name} » dépasse 8 Mo.` : null
-  documents.value = files
-}
-
 async function send() {
-  const data = new FormData()
-  Object.entries(fields).forEach(([key, value]) => {
-    if (value !== '') data.append(key, value)
-  })
-  documents.value.forEach((file) => data.append('documents[]', file))
-  const result = await form.submit(() => api.post('/api/v1/public/partner-requests', data))
+  const result = await form.submit(() => api.post('/api/v1/public/partner-requests', fields))
   if (result !== undefined) sent.value = true
 }
 
@@ -92,8 +68,9 @@ const PERKS = [
         <CircleCheckBig class="mx-auto size-12 text-emerald-600" />
         <p class="font-display text-2xl font-bold">Demande envoyée</p>
         <p class="text-muted">
-          L’équipe KiffUp vérifie vos informations et vous contacte sur votre téléphone sous
-          quelques jours.
+          L’équipe KiffUp vous appelle sous quelques jours. Une fois votre compte activé, vous
+          recevrez un message WhatsApp pour choisir votre mot de passe, puis vous compléterez votre
+          fiche (adresse, offres, vidéos) depuis votre espace.
         </p>
         <RouterLink :to="{ name: 'discover' }" class="btn-primary">Voir Découvrir</RouterLink>
       </div>
@@ -139,58 +116,11 @@ const PERKS = [
               v-model="fields.phone"
               class="input min-w-0 flex-1"
               type="tel"
+              autocomplete="tel-national"
+              :placeholder="fields.country === 'CI' ? '07 07 07 07 07' : ''"
               required
             />
           </div>
-        </FormField>
-        <FormField label="Email (facultatif)" for="email" :error="form.fieldError('email')">
-          <input
-            id="email"
-            v-model="fields.email"
-            class="input"
-            type="email"
-            autocomplete="email"
-          />
-        </FormField>
-        <FormField label="Ville" for="city" :error="form.fieldError('city')">
-          <input id="city" v-model="fields.city" class="input" required />
-        </FormField>
-        <FormField
-          label="Adresse"
-          for="address"
-          :error="form.fieldError('address')"
-          class="sm:col-span-2"
-        >
-          <input
-            id="address"
-            v-model="fields.address"
-            class="input"
-            placeholder="Quartier, rue, repère"
-          />
-        </FormField>
-        <FormField
-          label="Présentez votre établissement"
-          for="message"
-          :error="form.fieldError('message')"
-          class="sm:col-span-2"
-        >
-          <textarea id="message" v-model="fields.message" class="input" rows="4" maxlength="3000" />
-        </FormField>
-        <FormField
-          label="Pièces justificatives"
-          for="documents"
-          :error="documentsError ?? form.fieldError('documents') ?? form.fieldError('documents.0')"
-          hint="RCCM ou pièce d’identité du gérant, et une photo de la devanture. Photo ou PDF, 8 Mo au plus chacun."
-          class="sm:col-span-2"
-        >
-          <input
-            id="documents"
-            type="file"
-            multiple
-            accept="image/jpeg,image/png,image/webp,application/pdf"
-            class="input"
-            @change="pickDocuments"
-          />
         </FormField>
         <label class="flex items-start gap-3 text-sm sm:col-span-2">
           <input
@@ -208,7 +138,7 @@ const PERKS = [
           <button
             type="submit"
             class="btn-primary w-full sm:w-auto"
-            :disabled="form.processing.value || !!documentsError"
+            :disabled="form.processing.value"
           >
             {{ form.processing.value ? 'Envoi…' : 'Envoyer ma demande' }}
           </button>
