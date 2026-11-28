@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { ChevronDown } from 'lucide-vue-next'
 import { formatStayRange, formatXof } from '@/lib/format'
 import BookingForm from '@/components/BookingForm.vue'
 import PriceDetail from '@/components/PriceDetail.vue'
@@ -94,6 +95,10 @@ const perLabel = computed(() => {
   }
 })
 const suffix = computed(() => (current.value ? perUnitSuffix(current.value.unit) : ''))
+// Phones: the unit price detail is folded (the order recap below shows the full detail).
+const detailOpen = ref(
+  typeof window === 'undefined' || window.matchMedia('(min-width: 40rem)').matches,
+)
 const blockedReason = computed(() => {
   if (!props.listing.is_bookable) return 'Momentanément indisponible'
   if (current.value?.unit === 'stay' && props.pkg && !props.pkg.is_bookable)
@@ -154,7 +159,17 @@ const blockedReason = computed(() => {
 
       <div class="space-y-4 p-6">
         <!-- Transparency: what the price is made of, and what the rental costs -->
+        <button
+          type="button"
+          class="flex w-full items-center justify-between text-sm font-medium text-stone-600"
+          :aria-expanded="detailOpen"
+          @click="detailOpen = !detailOpen"
+        >
+          {{ detailOpen ? 'Masquer le détail du prix' : 'Voir le détail du prix' }}
+          <ChevronDown class="size-4 transition" :class="{ 'rotate-180': detailOpen }" />
+        </button>
         <PriceDetail
+          v-if="detailOpen"
           :partner-base="current.price.breakdown.partner_base_amount"
           :markup-bp="current.price.breakdown.markup_bp"
           :markup-amount="current.price.breakdown.markup_amount"

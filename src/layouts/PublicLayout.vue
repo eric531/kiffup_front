@@ -43,7 +43,7 @@ const { tabs, accountLink } = usePublicTabs()
 
 <template>
   <div
-    class="flex min-h-dvh flex-col"
+    class="flex min-h-dvh flex-col bg-surface"
     :style="route.meta.hideTabBar ? { '--tabbar': '0px' } : undefined"
   >
     <!-- Header: transparent over the dark hero, frosted night glass once scrolled -->
