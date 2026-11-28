@@ -4,7 +4,10 @@ import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
 import { LISTING_TYPE_GRADIENTS, LISTING_TYPE_ICONS } from '@/lib/icons'
 import type { Listing } from '@/types/catalog'
 
-/** Photos of a listing with arrows and thumbnails; a gradient with the type icon when there is none. */
+/**
+ * Photos of a listing. Phone: full-width carousel swiped with the finger (dots and counter).
+ * Computer: arrows and thumbnails. A gradient with the type icon when there is no photo.
+ */
 const props = defineProps<{ listing: Listing }>()
 
 const activePhoto = ref(0)
@@ -14,13 +17,63 @@ const go = (step: number) =>
   (activePhoto.value = (activePhoto.value + step + photoCount.value) % photoCount.value)
 watch(
   () => props.listing.id,
-  () => (activePhoto.value = 0),
+  () => {
+    activePhoto.value = 0
+    swiped.value = 0
+    carousel.value?.scrollTo({ left: 0 })
+  },
 )
+
+// Phone carousel: the photo in view follows the finger (scroll snapping).
+const carousel = ref<HTMLElement | null>(null)
+const swiped = ref(0)
+function onSwipe() {
+  const el = carousel.value
+  if (el) swiped.value = Math.round(el.scrollLeft / el.clientWidth)
+}
+function swipeTo(index: number) {
+  carousel.value?.scrollTo({ left: index * carousel.value.clientWidth, behavior: 'smooth' })
+}
 </script>
 
 <template>
   <div>
-    <div v-if="photoCount" class="space-y-3">
+    <!-- Phone: full-width swipeable carousel -->
+    <div v-if="photoCount" class="relative -mx-4 sm:hidden">
+      <div
+        ref="carousel"
+        class="flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        @scroll.passive="onSwipe"
+      >
+        <img
+          v-for="(photo, index) in listing.photos"
+          :key="photo.id"
+          :src="photo.url"
+          :alt="index === 0 ? listing.title : ''"
+          :loading="index === 0 ? 'eager' : 'lazy'"
+          class="aspect-[4/3] w-full shrink-0 snap-center object-cover"
+        />
+      </div>
+      <template v-if="photoCount > 1">
+        <span class="chip absolute top-3 right-3 bg-night-950/70 text-white"
+          >{{ swiped + 1 }} / {{ photoCount }}</span
+        >
+        <div class="absolute inset-x-0 bottom-3 flex justify-center gap-1.5">
+          <button
+            v-for="(photo, index) in listing.photos"
+            :key="photo.id"
+            type="button"
+            class="h-1.5 rounded-full transition-all"
+            :class="index === swiped ? 'w-5 bg-white' : 'w-1.5 bg-white/60'"
+            :aria-label="`Photo ${index + 1}`"
+            @click="swipeTo(index)"
+          />
+        </div>
+      </template>
+    </div>
+
+    <!-- Computer: arrows and thumbnails -->
+    <div v-if="photoCount" class="hidden space-y-3 sm:block">
       <div class="group relative overflow-hidden rounded-4xl bg-night-900 shadow-lift">
         <Transition
           mode="out-in"

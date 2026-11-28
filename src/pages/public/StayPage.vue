@@ -149,7 +149,7 @@ watch(() => props.listingId, load, { immediate: true })
 <template>
   <div>
     <!-- Dark band under the header -->
-    <section class="relative isolate overflow-hidden pt-24 pb-8 text-white sm:pt-28">
+    <section class="relative isolate overflow-hidden pt-20 pb-6 text-white sm:pt-28 sm:pb-8">
       <StageBackdrop :image="listing?.photos[0]?.url" :spotlights="false" intensity="soft" />
       <div class="container-page relative">
         <RouterLink
@@ -209,7 +209,7 @@ watch(() => props.listingId, load, { immediate: true })
 
     <div
       v-else-if="listing"
-      class="container-page grid grid-cols-1 gap-8 py-10 lg:grid-cols-[minmax(0,1fr)_25rem]"
+      class="container-page grid grid-cols-1 gap-6 pb-10 sm:gap-8 sm:py-10 lg:grid-cols-[minmax(0,1fr)_25rem]"
     >
       <div class="space-y-8">
         <ListingGallery :listing="listing" />

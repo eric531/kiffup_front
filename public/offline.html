@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0e0c1d" />
+    <title>Pas de connexion · KiffUp</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background: radial-gradient(circle at 30% 10%, #3b1d4a, #07060f 60%);
+        color: #fff;
+        font-family:
+          system-ui,
+          -apple-system,
+          'Segoe UI',
+          Roboto,
+          sans-serif;
+        text-align: center;
+      }
+      img {
+        width: 72px;
+        height: 72px;
+        border-radius: 20px;
+      }
+      h1 {
+        margin: 24px 0 8px;
+        font-size: 26px;
+      }
+      p {
+        margin: 0 auto;
+        max-width: 320px;
+        color: rgb(255 255 255 / 0.7);
+        line-height: 1.5;
+      }
+      button {
+        margin-top: 28px;
+        border: 0;
+        border-radius: 999px;
+        padding: 14px 28px;
+        font: inherit;
+        font-weight: 700;
+        color: #fff;
+        background: linear-gradient(120deg, #f97316, #ec4899 55%, #7c3aed);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <img src="/icons/icon-192.png" alt="KiffUp" />
+      <h1>Pas de connexion</h1>
+      <p>Vérifie ton Wi-Fi ou tes données mobiles, puis réessaie.</p>
+      <button type="button" onclick="location.reload()">Réessayer</button>
+    </main>
+  </body>
+</html>

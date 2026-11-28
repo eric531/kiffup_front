@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ExternalLink, LogOut, ShieldCheck, X } from 'lucide-vue-next'
+import { ExternalLink, LogOut, ShieldCheck, Smartphone, X } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
+import { useInstallApp } from '@/composables/useInstallApp'
 import BrandLogo from '@/components/BrandLogo.vue'
 import MobileTabBar from '@/components/MobileTabBar.vue'
 import type { NavItem } from '@/types/navigation'
@@ -17,6 +18,9 @@ const auth = useAuthStore()
 const route = useRoute()
 const router = useRouter()
 const moreOpen = ref(false)
+// Installed app (PWA): offered in the "Plus" sheet.
+const installApp = useInstallApp()
+const iosInstallHint = ref(false)
 
 const tabs = computed(() => {
   const marked = props.items.filter((item) => item.tab)
@@ -61,7 +65,7 @@ async function logout() {
           <BrandLogo />
         </RouterLink>
         <span class="min-w-0 flex-1 truncate text-right text-sm font-semibold text-white/80">
-          {{ route.meta.title ?? area }}
+          {{ area }}
         </span>
       </div>
     </header>
@@ -256,6 +260,22 @@ async function logout() {
         </nav>
 
         <div class="mt-4 space-y-1 border-t border-stone-100 pt-3 text-sm font-medium">
+          <button
+            v-if="installApp.available.value"
+            type="button"
+            class="flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left active:bg-stone-100"
+            @click="
+              installApp.canPrompt.value ? installApp.install() : (iosInstallHint = !iosInstallHint)
+            "
+          >
+            <Smartphone class="size-5 text-stone-500" />
+            <span>
+              Installer l’application
+              <span v-if="iosInstallHint" class="block text-xs font-normal text-muted">
+                Touche Partager, puis « Sur l’écran d’accueil ».
+              </span>
+            </span>
+          </button>
           <RouterLink
             :to="{ name: 'account.security' }"
             class="flex items-center gap-3 rounded-2xl px-3 py-3 active:bg-stone-100"

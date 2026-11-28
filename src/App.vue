@@ -4,6 +4,8 @@ import { useRoute } from 'vue-router'
 import { useHead } from '@unhead/vue'
 import { useAuthStore } from '@/stores/auth'
 import { useMessagingStore } from '@/stores/messaging'
+// Installed app (PWA): listens to the browser's install offer from the first page.
+import '@/composables/useInstallApp'
 
 const route = useRoute()
 

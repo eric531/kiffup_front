@@ -3,6 +3,7 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute, type RouteLocationRaw } from 'vue-router'
 import { MessagesSquare, UserRound, WifiOff } from 'lucide-vue-next'
 import BrandLogo from '@/components/BrandLogo.vue'
+import InstallAppBanner from '@/components/InstallAppBanner.vue'
 import MobileTabBar from '@/components/MobileTabBar.vue'
 import PaymentLogo from '@/components/PaymentLogo.vue'
 import { usePublicTabs } from '@/composables/usePublicTabs'
@@ -171,6 +172,8 @@ const { tabs, accountLink } = usePublicTabs()
       </div>
     </footer>
 
+    <!-- Installed app (PWA): offered on the main screens only. -->
+    <InstallAppBanner v-if="['home', 'stays', 'account'].includes(String(route.name))" />
     <MobileTabBar v-if="!route.meta.hideTabBar" :items="tabs" />
   </div>
 </template>
