@@ -5,6 +5,7 @@ import { api } from '@/lib/api'
 import { toDateTimeLocal } from '@/lib/format'
 import { useForm } from '@/composables/useForm'
 import FormField from '@/components/FormField.vue'
+import FormSkeleton from '@/components/FormSkeleton.vue'
 import TierEditor from '@/components/TierEditor.vue'
 import {
   EVENT_STATUS_LABELS,
@@ -73,9 +74,16 @@ function fill(data: EventItem) {
   })
 }
 
+// The record of an existing event loads before its form shows (no empty form meanwhile).
+const loadingRecord = ref(!!props.id)
 async function load() {
   if (!props.id) return
-  fill((await api.get<{ data: EventItem }>(`/api/v1/admin/events/${props.id}`)).data)
+  loadingRecord.value = true
+  try {
+    fill((await api.get<{ data: EventItem }>(`/api/v1/admin/events/${props.id}`)).data)
+  } finally {
+    loadingRecord.value = false
+  }
 }
 
 async function save() {
@@ -158,7 +166,8 @@ watch(() => props.id, load, { immediate: true })
       </template>
     </PageHeader>
 
-    <form class="card grid gap-5 p-6 sm:grid-cols-2 sm:p-8" @submit.prevent="save">
+    <FormSkeleton v-if="loadingRecord" :fields="8" />
+    <form v-else class="card grid gap-5 p-6 sm:grid-cols-2 sm:p-8" @submit.prevent="save">
       <div v-if="form.error.value" class="alert-error sm:col-span-2">{{ form.error.value }}</div>
       <div v-if="saved" class="alert-success sm:col-span-2">Modifications enregistrées.</div>
 

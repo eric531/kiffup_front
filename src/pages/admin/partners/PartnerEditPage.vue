@@ -5,6 +5,7 @@ import { api } from '@/lib/api'
 import { formatRate } from '@/lib/format'
 import { useForm } from '@/composables/useForm'
 import FormField from '@/components/FormField.vue'
+import FormSkeleton from '@/components/FormSkeleton.vue'
 import {
   LISTINGS_ACCESS_LABELS,
   PARTNER_PROFILE_LABELS,
@@ -111,8 +112,16 @@ function fill(data: Partner) {
   })
 }
 
+// The record of an existing partner loads before its form shows (no empty form meanwhile).
+const loadingRecord = ref(!!props.id)
 async function load() {
-  if (props.id) fill((await api.get<{ data: Partner }>(`/api/v1/admin/partners/${props.id}`)).data)
+  if (!props.id) return
+  loadingRecord.value = true
+  try {
+    fill((await api.get<{ data: Partner }>(`/api/v1/admin/partners/${props.id}`)).data)
+  } finally {
+    loadingRecord.value = false
+  }
 }
 
 async function save() {
@@ -202,7 +211,8 @@ watch(() => props.id, load, { immediate: true })
       :back="{ to: { name: 'admin.partners' }, label: 'Partenaires' }"
     />
 
-    <form class="card grid gap-5 p-6 sm:grid-cols-2 sm:p-8" @submit.prevent="save">
+    <FormSkeleton v-if="loadingRecord" :fields="10" />
+    <form v-else class="card grid gap-5 p-6 sm:grid-cols-2 sm:p-8" @submit.prevent="save">
       <div v-if="form.error.value" class="alert-error sm:col-span-2">{{ form.error.value }}</div>
       <div v-if="saved" class="alert-success sm:col-span-2">Modifications enregistrées.</div>
 

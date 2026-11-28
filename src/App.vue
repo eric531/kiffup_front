@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import { useHead } from '@unhead/vue'
 import { useAuthStore } from '@/stores/auth'
 import { useMessagingStore } from '@/stores/messaging'
+import RouteProgress from '@/components/RouteProgress.vue'
 // Installed app (PWA): listens to the browser's install offer from the first page.
 import '@/composables/useInstallApp'
 
@@ -25,10 +26,10 @@ watch(
 useHead({
   title: computed(() => route.meta.title),
   titleTemplate: (title) => (title ? `${title} · KiffUp` : 'KiffUp'),
-  meta: [{ name: 'theme-color', content: '#0e0c1d' }],
 })
 </script>
 
 <template>
+  <RouteProgress />
   <RouterView />
 </template>

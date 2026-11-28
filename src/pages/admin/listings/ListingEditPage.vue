@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from 'vue'
+import FormSkeleton from '@/components/FormSkeleton.vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
   BadgePercent,
@@ -149,10 +150,18 @@ onMounted(async () => {
   ).data
 })
 
+// The record of an existing listing loads before its form shows (no empty form meanwhile).
+const loadingRecord = ref(!!props.id)
 watch(
   () => props.id,
   async (id) => {
-    if (id) fill((await api.get<{ data: Listing }>(`${base.value}/${id}`)).data)
+    if (!id) return
+    loadingRecord.value = true
+    try {
+      fill((await api.get<{ data: Listing }>(`${base.value}/${id}`)).data)
+    } finally {
+      loadingRecord.value = false
+    }
   },
   { immediate: true },
 )
@@ -337,7 +346,8 @@ async function decide(approve: boolean) {
       </div>
     </template>
 
-    <form class="card grid gap-5 p-6 sm:grid-cols-2 sm:p-8" @submit.prevent="save">
+    <FormSkeleton v-if="loadingRecord" :fields="8" />
+    <form v-else class="card grid gap-5 p-6 sm:grid-cols-2 sm:p-8" @submit.prevent="save">
       <fieldset :disabled="readOnly" class="contents">
         <div v-if="form.error.value" class="alert-error sm:col-span-2">{{ form.error.value }}</div>
         <div v-if="saved" class="alert-success sm:col-span-2">Modifications enregistrées.</div>

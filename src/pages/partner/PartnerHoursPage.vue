@@ -6,6 +6,7 @@ import { useForm } from '@/composables/useForm'
 import { usePartnerProfile } from '@/composables/usePartnerProfile'
 import PageHeader from '@/components/PageHeader.vue'
 import OpeningHoursEditor from '@/components/OpeningHoursEditor.vue'
+import FormSkeleton from '@/components/FormSkeleton.vue'
 import type { OpeningRange, Partner } from '@/types/catalog'
 
 /** The partner keeps its opening hours and closing days up to date (V3, lot F4). */
@@ -47,7 +48,8 @@ async function save() {
       :icon="Clock3"
     />
 
-    <form class="card max-w-2xl space-y-5 p-6" @submit.prevent="save">
+    <FormSkeleton v-if="!partner" :fields="4" class="max-w-2xl" />
+    <form v-else class="card max-w-2xl space-y-5 p-6" @submit.prevent="save">
       <div v-if="saved" class="alert-success">Horaires enregistrés.</div>
       <div v-if="form.error.value" class="alert-error">{{ form.error.value }}</div>
       <p v-if="partner && !hours.length" class="alert-info">
