@@ -186,6 +186,9 @@
     grid-template-columns: minmax(0, 1fr);
   }
   html {
+    /* What iPhones show under their own bars (status bar, Safari's toolbar, overscroll): dark, as the
+       header and the tab bar. The pages themselves keep the light body background. */
+    background-color: var(--color-night-950);
     -webkit-tap-highlight-color: transparent;
     scroll-behavior: smooth;
     /* No font inflation when the phone is turned sideways. */

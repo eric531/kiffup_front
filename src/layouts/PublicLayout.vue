@@ -94,12 +94,14 @@ const { tabs, accountLink } = usePublicTabs()
 
     <div
       v-if="auth.apiUnavailable"
-      class="fixed inset-x-0 top-16 z-40 flex items-center justify-center gap-2 bg-amber-400 px-4 py-2 text-sm font-medium text-night-900"
+      class="fixed inset-x-0 top-[calc(4rem+env(safe-area-inset-top))] z-40 flex items-center justify-center gap-2 bg-amber-400 px-4 py-2 text-sm font-medium text-night-900"
     >
       <WifiOff class="size-4" /> Le serveur ne répond pas pour le moment. Certaines fonctions sont
       indisponibles.
     </div>
 
+    <!-- Notched phones (installed app): a dark strip under the status bar, then the page. -->
+    <div class="h-[env(safe-area-inset-top)] shrink-0 bg-night-950" />
     <main class="pb-tabbar flex-1">
       <RouterView v-slot="{ Component, route: r }">
         <Transition name="page" mode="out-in">

@@ -174,29 +174,48 @@ const faq = [
   <div>
     <!-- ───────────── HERO ───────────── -->
     <section
-      class="relative isolate overflow-hidden pt-28 pb-20 text-white sm:pt-36 lg:min-h-[92svh] lg:pb-28"
+      class="relative isolate overflow-hidden pt-22 pb-8 text-white sm:pt-36 sm:pb-20 lg:min-h-[92svh] lg:pb-28"
     >
       <StageBackdrop :image="featured?.cover_url" />
 
       <div class="container-page relative grid items-center gap-14 lg:grid-cols-[1.15fr_0.85fr]">
-        <div class="space-y-7">
+        <div class="space-y-5 sm:space-y-7">
           <p class="chip glass animate-fade-up text-white/90">
             <Sparkles class="size-3.5 text-gold-400" /> Sorties, séjours et bien-être
           </p>
           <h1
-            class="animate-fade-up text-[2.4rem] leading-[1.04] font-extrabold [animation-delay:80ms] sm:text-6xl lg:text-7xl"
+            class="animate-fade-up text-[2rem] leading-[1.06] font-extrabold [animation-delay:80ms] sm:text-6xl lg:text-7xl"
           >
             Concerts, nuits, massages :
             <span class="text-gradient animate-gradient"
               >tout ce que tu kiffes, réservé en 2 minutes.</span
             >
           </h1>
-          <p class="max-w-xl animate-fade-up text-lg text-white/75 [animation-delay:160ms]">
+          <p
+            class="hidden max-w-xl animate-fade-up text-lg text-white/75 [animation-delay:160ms] sm:block"
+          >
             Découvre les lieux en vidéo et réserve chez des partenaires vérifiés depuis ton
             téléphone, à Abidjan comme depuis Paris.
           </p>
+          <!-- Phones: the four categories as shortcuts, as in an app. -->
+          <nav
+            class="grid animate-fade-up grid-cols-4 gap-2 [animation-delay:160ms] sm:hidden"
+            aria-label="Catégories"
+          >
+            <RouterLink
+              v-for="category in LISTING_CATEGORIES"
+              :key="category.key"
+              :to="{ name: 'stays', query: { categorie: category.key } }"
+              class="flex flex-col items-center gap-1.5 rounded-2xl glass px-1 py-3 text-center text-[11px] font-semibold active:scale-95"
+            >
+              <span class="grid size-10 place-items-center rounded-xl bg-sunset shadow-glow">
+                <component :is="LISTING_CATEGORY_ICONS[category.key]" class="size-5" />
+              </span>
+              {{ category.label }}
+            </RouterLink>
+          </nav>
           <div
-            class="grid animate-fade-up grid-cols-2 gap-3 [animation-delay:240ms] sm:flex sm:flex-wrap"
+            class="hidden animate-fade-up grid-cols-2 gap-3 [animation-delay:240ms] sm:flex sm:flex-wrap"
           >
             <a href="#evenements" class="btn-primary col-span-2 px-7 py-3.5 text-base">
               Voir les événements <ArrowRight class="size-4" />
@@ -209,7 +228,7 @@ const faq = [
             </RouterLink>
           </div>
           <ul
-            class="flex animate-fade-up flex-wrap gap-x-6 gap-y-2 text-sm text-white/70 [animation-delay:320ms]"
+            class="flex animate-fade-up flex-wrap gap-x-6 gap-y-2 text-xs text-white/70 [animation-delay:320ms] sm:text-sm"
           >
             <li class="inline-flex items-center gap-2">
               <Wallet class="size-4 text-brand-400" /> Wave, Orange, MTN, Moov
@@ -303,7 +322,9 @@ const faq = [
     </section>
 
     <!-- ───────────── MARQUEE ───────────── -->
-    <div class="relative overflow-hidden border-y border-white/10 bg-night-900 py-4 text-white/60">
+    <div
+      class="relative hidden overflow-hidden border-y border-white/10 bg-night-900 py-4 text-white/60 sm:block"
+    >
       <div
         class="flex w-max animate-[marquee_38s_linear_infinite] gap-10 font-display text-lg font-semibold whitespace-nowrap"
       >
@@ -320,13 +341,13 @@ const faq = [
     </div>
 
     <!-- ───────────── EVENTS ───────────── -->
-    <section id="evenements" class="container-page scroll-mt-20 py-20 sm:py-24">
-      <div v-reveal class="mb-10 flex flex-wrap items-end justify-between gap-4">
+    <section id="evenements" class="container-page scroll-mt-20 py-8 sm:py-24">
+      <div v-reveal class="mb-5 flex flex-wrap items-end justify-between gap-4 sm:mb-10">
         <div>
           <p class="text-sm font-semibold tracking-widest text-brand-600 uppercase">À l'affiche</p>
           <h2 class="mt-2 text-3xl font-extrabold sm:text-4xl">Concerts et spectacles</h2>
         </div>
-        <p class="max-w-md text-muted">
+        <p class="hidden max-w-md text-muted sm:block">
           Choisis ton événement et réserve ta nuit, ta voiture ou ton pack avant que les prix
           n'augmentent.
         </p>
@@ -401,13 +422,17 @@ const faq = [
         </RouterLink>
 
         <!-- Other events -->
-        <div v-if="others.length" class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <!-- Phones: a row swiped with the finger. -->
+        <div
+          v-if="others.length"
+          class="-mx-4 mt-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-6 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3"
+        >
           <RouterLink
             v-for="(event, i) in others"
             :key="event.id"
             v-reveal="i * 90"
             :to="{ name: 'event', params: { slug: event.slug } }"
-            class="group card card-hover overflow-hidden p-0"
+            class="group card card-hover w-[78%] shrink-0 snap-start overflow-hidden p-0 sm:w-auto"
           >
             <div class="relative aspect-[16/10] overflow-hidden bg-sunset">
               <img
@@ -436,13 +461,13 @@ const faq = [
     </section>
 
     <!-- ───────────── DISCOVER TEASER ───────────── -->
-    <section class="bg-night-950 py-20 text-white sm:py-24">
+    <section class="bg-night-950 py-8 text-white sm:py-24">
       <div class="container-page">
-        <div v-reveal class="mb-10 flex flex-wrap items-end justify-between gap-4">
+        <div v-reveal class="mb-5 flex flex-wrap items-end justify-between gap-4 sm:mb-10">
           <div>
             <p class="text-sm font-semibold tracking-widest text-brand-400 uppercase">Découvrir</p>
             <h2 class="mt-2 text-3xl font-extrabold sm:text-4xl">Les lieux en vidéo</h2>
-            <p class="mt-3 max-w-xl text-white/70">
+            <p class="mt-3 hidden max-w-xl text-white/70 sm:block">
               Plages, restaurants, hôtels, spas, espaces d'événements : fais défiler les vidéos des
               partenaires, contacte-les en un geste ou réserve l'offre liée.
             </p>
@@ -451,13 +476,16 @@ const faq = [
             <Play class="size-4" /> Ouvrir Découvrir
           </RouterLink>
         </div>
-        <div v-if="videos.length" class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <div
+          v-if="videos.length"
+          class="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-4"
+        >
           <RouterLink
             v-for="(video, i) in videos"
             :key="video.id"
             v-reveal="i * 80"
             :to="{ name: 'discover-video', params: { videoId: video.id } }"
-            class="group relative block aspect-[9/14] overflow-hidden rounded-3xl bg-night-800"
+            class="group relative block aspect-[9/14] w-[42%] shrink-0 snap-start overflow-hidden rounded-3xl bg-night-800 sm:w-auto"
           >
             <img
               :src="video.cover_url!"
@@ -486,14 +514,14 @@ const faq = [
     </section>
 
     <!-- ───────────── BOOK ALL YEAR ───────────── -->
-    <section class="container-page py-20 sm:py-24">
-      <div v-reveal class="mb-10 flex flex-wrap items-end justify-between gap-4">
+    <section class="container-page py-8 sm:py-24">
+      <div v-reveal class="mb-5 flex flex-wrap items-end justify-between gap-4 sm:mb-10">
         <div>
           <p class="text-sm font-semibold tracking-widest text-brand-600 uppercase">
             Toute l'année
           </p>
           <h2 class="mt-2 text-3xl font-extrabold sm:text-4xl">Réserve aux dates de ton choix</h2>
-          <p class="mt-3 max-w-xl text-muted">
+          <p class="mt-3 hidden max-w-xl text-muted sm:block">
             Avec ou sans événement : une nuit, un week-end, une voiture pour la journée ou un moment
             de détente.
           </p>
@@ -502,7 +530,8 @@ const faq = [
           Tout voir <ArrowRight class="size-4" />
         </RouterLink>
       </div>
-      <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <!-- Phones: the categories are already at the top of the page. -->
+      <div class="hidden grid-cols-2 gap-4 sm:grid lg:grid-cols-4">
         <RouterLink
           v-for="(category, i) in LISTING_CATEGORIES"
           :key="category.key"
@@ -521,8 +550,16 @@ const faq = [
           </span>
         </RouterLink>
       </div>
-      <div v-if="stays.length" class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <div v-for="(listing, i) in stays" :key="listing.id" v-reveal="(i % 3) * 80">
+      <div
+        v-if="stays.length"
+        class="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:mt-8 sm:grid sm:grid-cols-2 sm:gap-6 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3"
+      >
+        <div
+          v-for="(listing, i) in stays"
+          :key="listing.id"
+          v-reveal="(i % 3) * 80"
+          class="w-[82%] shrink-0 snap-start sm:w-auto"
+        >
           <ListingCard
             :listing="listing"
             :to="{ name: 'stay', params: { listingId: listing.id } }"
@@ -534,7 +571,7 @@ const faq = [
     <!-- ───────────── HOW IT WORKS ───────────── -->
     <section
       id="comment-ca-marche"
-      class="relative scroll-mt-20 overflow-hidden bg-white py-20 sm:py-24"
+      class="relative hidden scroll-mt-20 overflow-hidden bg-white py-20 sm:block sm:py-24"
     >
       <div
         class="pointer-events-none absolute -top-24 right-0 size-96 rounded-full bg-brand-100 blur-3xl"
@@ -578,7 +615,7 @@ const faq = [
     </section>
 
     <!-- ───────────── FEATURES ───────────── -->
-    <section class="container-page py-20 sm:py-24">
+    <section class="container-page hidden py-20 sm:block sm:py-24">
       <div v-reveal class="max-w-2xl">
         <p class="text-sm font-semibold tracking-widest text-brand-600 uppercase">
           Pourquoi KiffUp
@@ -606,10 +643,24 @@ const faq = [
     </section>
 
     <!-- ───────────── PARTNERS (addressed with "vous") ───────────── -->
-    <section id="partenaires" class="container-page scroll-mt-20 pb-20 sm:pb-24">
+    <section id="partenaires" class="container-page scroll-mt-20 pb-8 sm:pb-24">
+      <!-- Phones: a short card. -->
+      <RouterLink
+        :to="{ name: 'become-partner' }"
+        class="flex items-center gap-4 rounded-3xl bg-night-900 p-5 text-white active:scale-[0.99] sm:hidden"
+      >
+        <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-sunset shadow-glow">
+          <Handshake class="size-6" />
+        </span>
+        <span class="min-w-0 flex-1">
+          <span class="block font-display font-bold">Vous avez un établissement ?</span>
+          <span class="block text-sm text-white/70">Devenez partenaire KiffUp</span>
+        </span>
+        <ArrowRight class="size-5 shrink-0" />
+      </RouterLink>
       <div
         v-reveal
-        class="relative isolate overflow-hidden rounded-4xl bg-night-900 px-7 py-12 text-white sm:px-12 lg:px-16 lg:py-16"
+        class="relative isolate hidden overflow-hidden rounded-4xl bg-night-900 px-7 py-12 text-white sm:block sm:px-12 lg:px-16 lg:py-16"
       >
         <div
           class="absolute -top-24 -right-20 -z-10 size-96 rounded-full bg-brand-500/40 blur-3xl animate-blob"
@@ -661,7 +712,7 @@ const faq = [
     </section>
 
     <!-- ───────────── FAQ ───────────── -->
-    <section id="faq" class="scroll-mt-20 bg-white py-20 sm:py-24">
+    <section id="faq" class="scroll-mt-20 bg-white py-10 sm:py-24">
       <div class="container-page grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
         <div v-reveal>
           <p class="text-sm font-semibold tracking-widest text-brand-600 uppercase">

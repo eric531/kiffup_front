@@ -213,7 +213,7 @@ watch(() => props.slug, load, { immediate: true })
       <!-- ───────────── FILTERS (sticky) ───────────── -->
       <div
         id="offres"
-        class="sticky top-16 z-30 scroll-mt-16 border-b border-stone-200/70 bg-surface/85 backdrop-blur-lg"
+        class="sticky top-[calc(4rem+env(safe-area-inset-top))] z-30 scroll-mt-16 border-b border-stone-200/70 bg-surface/85 backdrop-blur-lg"
       >
         <div class="container-page flex items-center gap-2.5 overflow-x-auto py-3">
           <button

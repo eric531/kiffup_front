@@ -484,7 +484,7 @@ const { tabs } = usePublicTabs()
          clicks: on wide screens this row passes over the video's sound and full-screen buttons. -->
     <div
       v-if="inVitrine && (vitrineStatus || passNotice)"
-      class="pointer-events-none absolute top-[4.5rem] right-44 left-3 z-20 flex flex-col items-start gap-2 *:pointer-events-auto"
+      class="pointer-events-none absolute top-[calc(4.5rem+env(safe-area-inset-top))] right-44 left-3 z-20 flex flex-col items-start gap-2 *:pointer-events-auto"
     >
       <p
         v-if="passNotice"

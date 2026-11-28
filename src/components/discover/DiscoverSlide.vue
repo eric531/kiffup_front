@@ -310,7 +310,9 @@ const compact = (n: number) =>
         </RouterLink>
       </div>
 
-      <div class="absolute top-[4.5rem] right-3 flex items-center gap-2">
+      <div
+        class="absolute top-[calc(4.5rem+env(safe-area-inset-top))] right-3 flex items-center gap-2"
+      >
         <button
           v-if="video.video_url && !(video.locked && blocked)"
           type="button"

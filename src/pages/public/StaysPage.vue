@@ -194,7 +194,9 @@ const total = computed(() => result.value?.meta.total ?? 0)
     </section>
 
     <!-- ───────────── CATEGORY FILTERS (sticky) ───────────── -->
-    <div class="sticky top-16 z-30 border-b border-stone-200/70 bg-surface/85 backdrop-blur-lg">
+    <div
+      class="sticky top-[calc(4rem+env(safe-area-inset-top))] z-30 border-b border-stone-200/70 bg-surface/85 backdrop-blur-lg"
+    >
       <div class="container-page flex items-center gap-2.5 overflow-x-auto py-3">
         <button
           v-for="category in [null, ...LISTING_CATEGORIES]"
