@@ -131,7 +131,13 @@ const PERKS = [
           />
           <span>
             Je représente un établissement ouvert au public et je m’engage à publier uniquement des
-            contenus qui montrent le lieu et ses prestations, sans contenu suggestif.
+            contenus qui montrent le lieu et ses prestations, sans contenu suggestif. J’accepte les
+            <RouterLink
+              :to="{ name: 'legal.terms', hash: '#partenaires' }"
+              target="_blank"
+              class="font-medium text-brand-700 underline"
+              >conditions partenaires</RouterLink
+            >.
           </span>
         </label>
         <div class="sm:col-span-2">

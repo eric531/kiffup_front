@@ -500,7 +500,22 @@ async function submit() {
         type="checkbox"
         class="mt-0.5 size-4.5 shrink-0 accent-brand-600"
       />
-      <span>J'accepte les conditions générales de vente et la politique d'annulation.</span>
+      <span>
+        J'accepte les
+        <RouterLink
+          :to="{ name: 'legal.terms' }"
+          target="_blank"
+          class="font-medium text-brand-700 underline"
+          >conditions générales</RouterLink
+        >
+        et la
+        <RouterLink
+          :to="{ name: 'legal.terms', hash: '#annulation' }"
+          target="_blank"
+          class="font-medium text-brand-700 underline"
+          >politique d'annulation</RouterLink
+        >.
+      </span>
     </label>
     <p v-if="form.fieldError('accept_terms')" class="input-error">
       {{ form.fieldError('accept_terms') }}

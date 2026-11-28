@@ -168,7 +168,20 @@ const { tabs, accountLink } = usePublicTabs()
       </div>
       <div class="border-t border-white/10">
         <div class="container-page flex flex-col gap-2 py-5 text-xs sm:flex-row sm:justify-between">
-          <p>© {{ year }} KiffUp. Tous droits réservés.</p>
+          <p>
+            © {{ year }} KiffUp. Tous droits réservés ·
+            <RouterLink :to="{ name: 'legal.terms' }" class="hover:text-white"
+              >Conditions générales</RouterLink
+            >
+            ·
+            <RouterLink :to="{ name: 'legal.privacy' }" class="hover:text-white"
+              >Confidentialité</RouterLink
+            >
+            ·
+            <RouterLink :to="{ name: 'legal.notice' }" class="hover:text-white"
+              >Mentions légales</RouterLink
+            >
+          </p>
           <p>Fait avec ♥ à Abidjan</p>
         </div>
       </div>

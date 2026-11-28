@@ -145,6 +145,14 @@ function changeNumber() {
     </form>
 
     <template #after>
+      En continuant, tu acceptes les
+      <RouterLink :to="{ name: 'legal.terms' }" class="font-semibold text-white hover:underline"
+        >conditions générales</RouterLink
+      >
+      et la
+      <RouterLink :to="{ name: 'legal.privacy' }" class="font-semibold text-white hover:underline"
+        >politique de confidentialité</RouterLink
+      >. <br /><br />
       Vous êtes partenaire ou administrateur ?
       <RouterLink :to="{ name: 'login' }" class="font-semibold text-white hover:underline">
         Espace partenaire

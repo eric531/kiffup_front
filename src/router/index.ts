@@ -151,6 +151,28 @@ const router = createRouter({
           component: () => import('@/pages/public/BecomePartnerPage.vue'),
           meta: { title: 'Devenir partenaire' },
         },
+        // Legal pages (also the privacy policy URL asked by the app stores).
+        {
+          path: 'conditions-generales',
+          name: 'legal.terms',
+          component: () => import('@/pages/public/LegalPage.vue'),
+          props: { doc: 'terms' },
+          meta: { title: 'Conditions générales', solidHeader: true },
+        },
+        {
+          path: 'confidentialite',
+          name: 'legal.privacy',
+          component: () => import('@/pages/public/LegalPage.vue'),
+          props: { doc: 'privacy' },
+          meta: { title: 'Confidentialité', solidHeader: true },
+        },
+        {
+          path: 'mentions-legales',
+          name: 'legal.notice',
+          component: () => import('@/pages/public/LegalPage.vue'),
+          props: { doc: 'notice' },
+          meta: { title: 'Mentions légales', solidHeader: true },
+        },
         // "Réserver": catalogue of listings bookable all year, outside events.
         {
           path: 'reserver',

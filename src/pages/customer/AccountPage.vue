@@ -347,5 +347,24 @@ watch(
         </button>
       </div>
     </section>
+
+    <!-- Phones have no footer: the legal pages and the partner links are here. -->
+    <nav
+      class="container-page flex flex-wrap justify-center gap-x-4 gap-y-2 pb-10 text-sm text-muted"
+      aria-label="Informations"
+    >
+      <RouterLink :to="{ name: 'legal.terms' }" class="hover:text-ink"
+        >Conditions générales</RouterLink
+      >
+      <RouterLink :to="{ name: 'legal.privacy' }" class="hover:text-ink"
+        >Confidentialité</RouterLink
+      >
+      <RouterLink :to="{ name: 'legal.notice' }" class="hover:text-ink"
+        >Mentions légales</RouterLink
+      >
+      <RouterLink :to="{ name: 'become-partner' }" class="hover:text-ink"
+        >Devenir partenaire</RouterLink
+      >
+    </nav>
   </div>
 </template>

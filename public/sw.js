@@ -5,7 +5,7 @@
  *  - pages always come from the network (latest version after each deployment), with a
  *    "no connection" page when the network is down.
  */
-const SHELL = 'kiffup-shell-v1'
+const SHELL = 'kiffup-shell-v2'
 const ASSETS = 'kiffup-assets'
 const OFFLINE = '/offline.html'
 const MAX_ASSETS = 80
