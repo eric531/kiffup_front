@@ -16,9 +16,12 @@ import { LISTING_TYPE_ICONS } from '@/lib/icons'
 import StageBackdrop from '@/components/StageBackdrop.vue'
 import ListingGallery from '@/components/ListingGallery.vue'
 import TariffBookingCard from '@/components/TariffBookingCard.vue'
+import StickyBookingBar from '@/components/StickyBookingBar.vue'
 import {
   LISTING_TYPE_LABELS,
+  cheapestTariff,
   durationLabel,
+  perUnitSuffix,
   type EventItem,
   type EventListing,
 } from '@/types/catalog'
@@ -40,6 +43,10 @@ const notFound = ref(false)
 const failed = ref(false)
 
 useHead({ title: computed(() => listing.value?.title) })
+// Phones: price and "Réserver" pinned at the bottom of the screen.
+const cheapest = computed(() =>
+  listing.value && proposal.value ? cheapestTariff(listing.value, proposal.value.package) : null,
+)
 
 const TypeIcon = computed(() => (listing.value ? LISTING_TYPE_ICONS[listing.value.type] : null))
 
@@ -181,7 +188,7 @@ watch(() => [props.slug, props.listingId], load, { immediate: true })
       </div>
 
       <!-- Booking card: event package, per night, per day -->
-      <aside class="lg:sticky lg:top-24 lg:self-start">
+      <aside id="reserver" class="scroll-mt-20 lg:sticky lg:top-24 lg:self-start">
         <TariffBookingCard
           v-if="proposal"
           :listing="listing"
@@ -193,5 +200,12 @@ watch(() => [props.slug, props.listingId], load, { immediate: true })
         />
       </aside>
     </div>
+
+    <StickyBookingBar
+      v-if="cheapest && event?.is_bookable"
+      :price="cheapest.price.customer_price"
+      :unit="perUnitSuffix(cheapest.unit)"
+      target="reserver"
+    />
   </div>
 </template>

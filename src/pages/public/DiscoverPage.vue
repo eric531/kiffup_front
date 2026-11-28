@@ -13,6 +13,8 @@ import {
   X,
 } from 'lucide-vue-next'
 import BrandLogo from '@/components/BrandLogo.vue'
+import MobileTabBar from '@/components/MobileTabBar.vue'
+import { usePublicTabs } from '@/composables/usePublicTabs'
 import DiscoverSlide from '@/components/discover/DiscoverSlide.vue'
 import PaymentMethodPicker from '@/components/PaymentMethodPicker.vue'
 import { api, ApiError } from '@/lib/api'
@@ -430,13 +432,15 @@ onBeforeUnmount(() => {
   observer?.disconnect()
   clearTimeout(passTimer)
 })
+// Phones: the same bottom tab bar as the rest of the site.
+const { tabs } = usePublicTabs()
 </script>
 
 <template>
   <div class="fixed inset-0 bg-black text-white">
     <!-- Top bar over the videos -->
     <header
-      class="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-center justify-between gap-3 bg-gradient-to-b from-black/70 to-transparent px-3 pt-3 pb-8"
+      class="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-center justify-between gap-3 bg-gradient-to-b from-black/70 to-transparent px-3 pt-[calc(0.75rem+env(safe-area-inset-top))] pb-8"
     >
       <!-- The bar lets clicks through to the video, its buttons do not. -->
       <div class="pointer-events-auto flex items-center gap-1">
@@ -505,7 +509,10 @@ onBeforeUnmount(() => {
     </div>
 
     <!-- Feed -->
-    <div ref="scroller" class="h-dvh snap-y snap-mandatory overflow-y-scroll overscroll-contain">
+    <div
+      ref="scroller"
+      class="h-[calc(100dvh-var(--tabbar))] snap-y snap-mandatory overflow-y-scroll overscroll-contain"
+    >
       <!-- The first of "À la une" comes back every few videos: the same video, another slide. -->
       <div v-for="(video, index) in videos" :key="`${index}-${video.id}`" :data-index="index">
         <DiscoverSlide
@@ -531,7 +538,7 @@ onBeforeUnmount(() => {
 
       <section
         v-if="!loading && videos.length === 0"
-        class="flex h-dvh flex-col items-center justify-center gap-4 px-8 text-center"
+        class="flex h-[calc(100dvh-var(--tabbar))] flex-col items-center justify-center gap-4 px-8 text-center"
       >
         <span class="grid size-16 place-items-center rounded-3xl bg-white/10">
           <Clapperboard class="size-8" />
@@ -570,10 +577,12 @@ onBeforeUnmount(() => {
     <!-- Filters -->
     <div
       v-if="filtersOpen"
-      class="absolute inset-0 z-30 flex items-end bg-black/60 sm:items-center sm:justify-center"
+      class="absolute inset-0 z-50 flex items-end bg-black/60 sm:items-center sm:justify-center"
       @click.self="filtersOpen = false"
     >
-      <div class="w-full space-y-5 rounded-t-4xl bg-white p-6 text-ink sm:max-w-md sm:rounded-4xl">
+      <div
+        class="w-full space-y-5 rounded-t-4xl bg-white p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] text-ink sm:max-w-md sm:rounded-4xl sm:pb-6"
+      >
         <div class="flex items-center justify-between">
           <p class="font-display text-lg font-bold">Qu'est-ce que tu veux découvrir ?</p>
           <button type="button" aria-label="Fermer" @click="filtersOpen = false">
@@ -621,11 +630,11 @@ onBeforeUnmount(() => {
     <!-- Pass Vitrine -->
     <div
       v-if="passOpen && vitrineStatus"
-      class="absolute inset-0 z-30 flex items-end bg-black/60 sm:items-center sm:justify-center"
+      class="absolute inset-0 z-50 flex items-end bg-black/60 sm:items-center sm:justify-center"
       @click.self="passOpen = false"
     >
       <form
-        class="max-h-[90dvh] w-full space-y-4 overflow-y-auto rounded-t-4xl bg-white p-6 text-ink sm:max-w-md sm:rounded-4xl"
+        class="max-h-[90dvh] w-full space-y-4 overflow-y-auto rounded-t-4xl bg-white p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] text-ink sm:max-w-md sm:rounded-4xl sm:pb-6"
         @submit.prevent="buyPass"
       >
         <div class="flex items-center justify-between">
@@ -686,10 +695,12 @@ onBeforeUnmount(() => {
     <!-- Share (browsers without the native share sheet) -->
     <div
       v-if="shareFor"
-      class="absolute inset-0 z-30 flex items-end bg-black/60 sm:items-center sm:justify-center"
+      class="absolute inset-0 z-50 flex items-end bg-black/60 sm:items-center sm:justify-center"
       @click.self="shareFor = null"
     >
-      <div class="w-full space-y-3 rounded-t-4xl bg-white p-6 text-ink sm:max-w-md sm:rounded-4xl">
+      <div
+        class="w-full space-y-3 rounded-t-4xl bg-white p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] text-ink sm:max-w-md sm:rounded-4xl sm:pb-6"
+      >
         <p class="font-display text-lg font-bold">Partager cette vidéo</p>
         <a
           class="btn-primary w-full"
@@ -717,11 +728,11 @@ onBeforeUnmount(() => {
     <!-- Report -->
     <div
       v-if="reportFor"
-      class="absolute inset-0 z-30 flex items-end bg-black/60 sm:items-center sm:justify-center"
+      class="absolute inset-0 z-50 flex items-end bg-black/60 sm:items-center sm:justify-center"
       @click.self="reportFor = null"
     >
       <form
-        class="w-full space-y-4 rounded-t-4xl bg-white p-6 text-ink sm:max-w-md sm:rounded-4xl"
+        class="w-full space-y-4 rounded-t-4xl bg-white p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] text-ink sm:max-w-md sm:rounded-4xl sm:pb-6"
         @submit.prevent="sendReport"
       >
         <template v-if="!reportSent">
@@ -753,5 +764,8 @@ onBeforeUnmount(() => {
         </template>
       </form>
     </div>
+
+    <!-- Phones: the site's tab bar under the feed, as in a video app -->
+    <MobileTabBar :items="tabs" />
   </div>
 </template>

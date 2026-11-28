@@ -21,15 +21,34 @@ import { useAuthStore } from '@/stores/auth'
 const auth = useAuthStore()
 
 const items = computed<NavItem[]>(() => [
-  { label: 'Tableau de bord', to: { name: 'admin.dashboard' }, icon: LayoutDashboard },
-  { label: 'Réservations', to: { name: 'admin.bookings' }, icon: ReceiptText },
+  // Phone tab bar: what the team checks during the day; the rest under "Plus".
+  {
+    label: 'Tableau de bord',
+    short: 'Accueil',
+    to: { name: 'admin.dashboard' },
+    icon: LayoutDashboard,
+    tab: true,
+  },
+  { label: 'Réservations', to: { name: 'admin.bookings' }, icon: ReceiptText, tab: true },
   { label: 'Retraits', to: { name: 'admin.withdrawals' }, icon: Banknote },
   { label: 'Événements', to: { name: 'admin.events' }, icon: CalendarDays },
   { label: 'Partenaires', to: { name: 'admin.partners' }, icon: Handshake },
   { label: 'Offres', to: { name: 'admin.listings' }, icon: Package },
-  { label: 'Modération vidéos', to: { name: 'admin.moderation' }, icon: Clapperboard },
+  {
+    label: 'Modération vidéos',
+    short: 'Vidéos',
+    to: { name: 'admin.moderation' },
+    icon: Clapperboard,
+    tab: true,
+  },
   { label: 'Messages signalés', to: { name: 'admin.message-reports' }, icon: Flag },
-  { label: 'Demandes partenaires', to: { name: 'admin.partner-requests' }, icon: UserPlus },
+  {
+    label: 'Demandes partenaires',
+    short: 'Demandes',
+    to: { name: 'admin.partner-requests' },
+    icon: UserPlus,
+    tab: true,
+  },
   ...(auth.isSuperAdmin
     ? [
         { label: 'Paramètres', to: { name: 'admin.settings' }, icon: Settings },

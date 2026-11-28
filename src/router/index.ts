@@ -16,6 +16,8 @@ declare module 'vue-router' {
     hideFooter?: boolean
     /** Same key for every page of a section: the layout keeps it mounted (Messenger-like list). */
     shellKey?: string
+    /** Full-screen step on a phone (a conversation): no bottom tab bar, as in a mobile app. */
+    hideTabBar?: boolean
   }
 }
 
@@ -114,7 +116,7 @@ const router = createRouter({
               name: 'customer.conversation',
               component: () => import('@/pages/customer/ConversationPage.vue'),
               props: true,
-              meta: { title: 'Conversation' },
+              meta: { title: 'Conversation', hideTabBar: true },
             },
           ],
         },
@@ -273,7 +275,7 @@ const router = createRouter({
               name: 'partner.conversation',
               component: () => import('@/pages/partner/PartnerConversationPage.vue'),
               props: true,
-              meta: { title: 'Conversation' },
+              meta: { title: 'Conversation', hideTabBar: true },
             },
           ],
         },

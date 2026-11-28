@@ -16,7 +16,7 @@ const today = computed(() =>
 
 <template>
   <section
-    class="relative isolate overflow-hidden rounded-4xl bg-night-950 px-6 py-7 text-white shadow-lift sm:px-8 sm:py-9"
+    class="relative isolate overflow-hidden rounded-4xl bg-night-950 px-5 py-6 text-white shadow-lift sm:px-8 sm:py-9"
   >
     <div
       class="pointer-events-none absolute -top-20 -right-16 -z-10 size-72 animate-blob rounded-full bg-flare-500/35 blur-3xl"
@@ -28,24 +28,25 @@ const today = computed(() =>
       class="pointer-events-none absolute top-0 left-0 -z-10 size-56 animate-blob rounded-full bg-dusk-600/30 blur-3xl [animation-delay:-12s]"
     />
 
-    <div class="flex flex-wrap items-end justify-between gap-6">
-      <div class="animate-fade-up">
+    <div class="flex flex-wrap items-end justify-between gap-5 sm:gap-6">
+      <div class="min-w-0 animate-fade-up">
         <p
           class="text-xs font-semibold tracking-[0.2em] text-white/50 uppercase first-letter:uppercase"
         >
           {{ eyebrow ?? today }}
         </p>
-        <h1 class="mt-2 text-3xl font-extrabold sm:text-4xl">{{ title }}</h1>
-        <p v-if="subtitle" class="mt-2 max-w-xl text-white/70">{{ subtitle }}</p>
+        <h1 class="mt-2 text-2xl font-extrabold sm:text-4xl">{{ title }}</h1>
+        <!-- Phones: the title is enough, the actions come right away. -->
+        <p v-if="subtitle" class="mt-2 hidden max-w-xl text-white/70 sm:block">{{ subtitle }}</p>
       </div>
       <div
         v-if="$slots.actions"
-        class="flex animate-fade-up flex-wrap gap-2 [animation-delay:120ms]"
+        class="grid w-full animate-fade-up grid-cols-2 gap-2 [animation-delay:120ms] *:px-3 sm:flex sm:w-auto sm:flex-wrap sm:*:px-5"
       >
         <slot name="actions" />
       </div>
     </div>
-    <div v-if="$slots.default" class="mt-7 animate-fade-up [animation-delay:200ms]">
+    <div v-if="$slots.default" class="mt-5 animate-fade-up [animation-delay:200ms] sm:mt-7">
       <slot />
     </div>
   </section>

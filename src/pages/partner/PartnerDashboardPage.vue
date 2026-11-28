@@ -101,34 +101,36 @@ onMounted(async () => {
       >
         <template #actions>
           <RouterLink :to="{ name: 'partner.check-in' }" class="btn-light">
-            <ScanLine class="size-4" /> Scanner une arrivée
+            <ScanLine class="size-4" /> Scanner<span class="hidden sm:inline"> une arrivée</span>
           </RouterLink>
           <RouterLink :to="{ name: 'partner.balance' }" class="btn-glass">
-            <Wallet class="size-4" /> Retirer mon argent
+            <Wallet class="size-4" /> Retirer<span class="hidden sm:inline"> mon argent</span>
           </RouterLink>
         </template>
 
-        <div v-if="finance" class="grid gap-3 sm:grid-cols-2">
-          <div class="glass flex items-center gap-4 rounded-2xl px-5 py-4">
+        <div v-if="finance" class="grid grid-cols-2 gap-3">
+          <div class="glass flex items-center gap-3 rounded-2xl px-4 py-3 sm:gap-4 sm:px-5 sm:py-4">
             <span
-              class="grid size-11 shrink-0 place-items-center rounded-2xl bg-sunset shadow-glow"
+              class="hidden size-11 shrink-0 place-items-center rounded-2xl bg-sunset shadow-glow sm:grid"
             >
               <Unlock class="size-5" />
             </span>
             <div>
               <p class="text-xs text-white/60">Disponible au retrait</p>
-              <p class="font-display text-2xl font-extrabold tabular-nums">
+              <p class="font-display text-lg font-extrabold tabular-nums sm:text-2xl">
                 {{ formatXof(finance.balances.available) }}
               </p>
             </div>
           </div>
-          <div class="glass flex items-center gap-4 rounded-2xl px-5 py-4">
-            <span class="grid size-11 shrink-0 place-items-center rounded-2xl bg-white/10">
+          <div class="glass flex items-center gap-3 rounded-2xl px-4 py-3 sm:gap-4 sm:px-5 sm:py-4">
+            <span
+              class="hidden size-11 shrink-0 place-items-center rounded-2xl bg-white/10 sm:grid"
+            >
               <Lock class="size-5" />
             </span>
             <div>
               <p class="text-xs text-white/60">Bloqué 48 h</p>
-              <p class="font-display text-2xl font-extrabold tabular-nums">
+              <p class="font-display text-lg font-extrabold tabular-nums sm:text-2xl">
                 {{ formatXof(finance.balances.locked) }}
               </p>
               <p v-if="releases[0]?.available_at" class="text-xs text-white/60">

@@ -171,9 +171,25 @@
 }
 
 @layer base {
+  :root {
+    /* Height of the phone tab bar (MobileTabBar), safe area of notched phones included. */
+    --tabbar: calc(4rem + env(safe-area-inset-bottom));
+  }
+  @media (min-width: 48rem) {
+    :root {
+      --tabbar: 0px;
+    }
+  }
+  /* Mobile first: a grid without explicit columns is one column that never grows past the screen
+     (an implicit "auto" column widens to its longest content). sm:/lg:grid-cols-* still apply. */
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
   html {
     -webkit-tap-highlight-color: transparent;
     scroll-behavior: smooth;
+    /* No font inflation when the phone is turned sideways. */
+    -webkit-text-size-adjust: 100%;
   }
   body {
     @apply bg-surface font-sans text-ink antialiased;
@@ -228,6 +244,26 @@
   }
   .btn-danger {
     @apply btn bg-red-600 text-white shadow-sm hover:bg-red-700;
+  }
+  /* Phone tab bar (MobileTabBar) */
+  .tabbar-item {
+    @apply flex h-full flex-col items-center justify-center gap-0.5 text-[11px] font-semibold transition active:scale-95;
+  }
+  .tabbar-badge {
+    @apply absolute -top-1 right-1.5 grid min-w-[18px] place-items-center rounded-full bg-flare-500 px-1 text-[10px] leading-[18px] font-bold text-white ring-2 ring-night-950;
+  }
+  /* Partner area and back-office: the tab bar stays up to tablets (sidebar from "lg"). */
+  .tabbar-until-lg {
+    --tabbar: calc(4rem + env(safe-area-inset-bottom));
+  }
+  @media (min-width: 64rem) {
+    .tabbar-until-lg {
+      --tabbar: 0px;
+    }
+  }
+  /* Room left under the content for the phone tab bar. */
+  .pb-tabbar {
+    padding-bottom: var(--tabbar);
   }
   .chip {
     @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold;

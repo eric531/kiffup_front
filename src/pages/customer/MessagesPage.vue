@@ -5,7 +5,9 @@ import MessengerLayout from '@/components/messaging/MessengerLayout.vue'
 </script>
 
 <template>
-  <div class="mx-auto flex h-dvh max-w-6xl flex-col pt-16 lg:px-6 lg:pt-22 lg:pb-6">
+  <div
+    class="mx-auto flex h-[calc(100dvh-var(--tabbar))] max-w-6xl flex-col pt-[calc(4rem+env(safe-area-inset-top))] lg:px-6 lg:pt-22 lg:pb-6"
+  >
     <MessengerLayout
       side="customer"
       title="Mes messages"

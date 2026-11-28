@@ -38,6 +38,7 @@ const messagesItem = computed<NavItem>(() => ({
   icon: MessagesSquare,
   badge: messaging.unread,
   prefix: true,
+  tab: true,
 }))
 
 // Vitrine partner (V3): videos only, nothing to book, no balance.
@@ -56,17 +57,36 @@ const BOOKING_PAGES = [
 const items = computed<NavItem[]>(() =>
   showcase.value
     ? [
+        {
+          label: 'Mes vidéos',
+          short: 'Vidéos',
+          to: { name: 'partner.videos' },
+          icon: Clapperboard,
+          tab: true,
+        },
         messagesItem.value,
-        { label: 'Mes vidéos', to: { name: 'partner.videos' }, icon: Clapperboard },
-        { label: 'À la une', to: { name: 'partner.spotlight' }, icon: Crown },
-        { label: 'Ma fiche', to: { name: 'partner.profile' }, icon: Store },
+        { label: 'À la une', to: { name: 'partner.spotlight' }, icon: Crown, tab: true },
+        { label: 'Ma fiche', to: { name: 'partner.profile' }, icon: Store, tab: true },
       ]
     : [
-        { label: 'Tableau de bord', to: { name: 'partner.dashboard' }, icon: LayoutDashboard },
-        { label: 'Réservations', to: { name: 'partner.bookings' }, icon: ReceiptText },
+        // Phone tab bar: home, bookings, the arrival scanner (used at the door), messages.
+        {
+          label: 'Tableau de bord',
+          short: 'Accueil',
+          to: { name: 'partner.dashboard' },
+          icon: LayoutDashboard,
+          tab: true,
+        },
+        { label: 'Réservations', to: { name: 'partner.bookings' }, icon: ReceiptText, tab: true },
+        {
+          label: 'Arrivées (scanner)',
+          short: 'Scanner',
+          to: { name: 'partner.check-in' },
+          icon: ScanLine,
+          tab: true,
+        },
         messagesItem.value,
         { label: 'Mes offres', to: { name: 'partner.listings' }, icon: Package },
-        { label: 'Arrivées (scanner)', to: { name: 'partner.check-in' }, icon: ScanLine },
         { label: 'Mon solde', to: { name: 'partner.balance' }, icon: Wallet },
         { label: 'Ma fiche', to: { name: 'partner.profile' }, icon: Store },
         { label: 'Mes horaires', to: { name: 'partner.hours' }, icon: Clock3 },

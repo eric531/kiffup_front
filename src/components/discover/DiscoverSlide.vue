@@ -141,7 +141,9 @@ const compact = (n: number) =>
 </script>
 
 <template>
-  <section class="relative flex h-dvh w-full snap-start snap-always items-center justify-center">
+  <section
+    class="relative flex h-[calc(100dvh-var(--tabbar))] w-full snap-start snap-always items-center justify-center"
+  >
     <!-- Video: 9:16 column on large screens, full screen on phones -->
     <div class="relative h-full w-full sm:aspect-[9/16] sm:w-auto sm:max-w-full">
       <video

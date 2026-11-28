@@ -205,7 +205,7 @@ async function save() {
     >
       <div
         v-if="dirtyKeys.length"
-        class="sticky bottom-4 z-20 mx-auto flex w-fit items-center gap-4 rounded-full bg-night-950 py-2 pr-2 pl-5 text-sm text-white shadow-lift"
+        class="sticky bottom-[calc(var(--tabbar)+1rem)] z-20 mx-auto flex w-fit items-center gap-4 rounded-full bg-night-950 py-2 pr-2 pl-5 text-sm text-white shadow-lift"
       >
         <span
           >{{ dirtyKeys.length }} modification{{ dirtyKeys.length > 1 ? 's' : '' }} non

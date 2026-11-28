@@ -9,4 +9,8 @@ export interface NavItem {
   badge?: number
   /** Also active on the pages below (a conversation under "Messages"). */
   prefix?: boolean
+  /** Shorter label for the phone tab bar ("Accueil" for "Tableau de bord"). */
+  short?: string
+  /** One of the phone tab bar's tabs; the other destinations go under "Plus". */
+  tab?: boolean
 }

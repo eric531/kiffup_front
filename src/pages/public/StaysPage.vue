@@ -119,24 +119,25 @@ const total = computed(() => result.value?.meta.total ?? 0)
 <template>
   <div>
     <!-- ───────────── HERO + SEARCH ───────────── -->
-    <section class="relative isolate overflow-hidden pt-28 pb-14 text-white sm:pt-32">
+    <section class="relative isolate overflow-hidden pt-22 pb-8 text-white sm:pt-32 sm:pb-14">
       <StageBackdrop :spotlights="false" intensity="soft" />
       <div class="container-page relative">
         <p class="chip glass animate-fade-up tracking-widest uppercase">Toute l'année</p>
-        <h1 class="mt-4 max-w-3xl text-4xl font-extrabold animate-fade-up sm:text-6xl">
+        <h1 class="mt-4 max-w-3xl text-3xl font-extrabold animate-fade-up sm:text-6xl">
           Réserve ce que tu kiffes, <span class="text-gradient">avec ou sans événement</span>
         </h1>
-        <p class="mt-4 max-w-2xl text-lg text-white/75 animate-fade-up">
+        <!-- Phones: straight to the search, as in an app. -->
+        <p class="mt-4 hidden max-w-2xl text-lg text-white/75 animate-fade-up sm:block">
           Une chambre pour la nuit, une voiture pour la journée, un massage à l'heure qui t'arrange
           : chez nos partenaires vérifiés. Tu paies en ligne, tu reçois ton QR code.
         </p>
 
         <form
-          class="mt-8 grid gap-3 rounded-4xl glass p-3 shadow-lift animate-fade-up sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_0.7fr_auto]"
+          class="mt-6 grid grid-cols-2 gap-2 rounded-4xl glass p-2.5 shadow-lift animate-fade-up sm:mt-8 sm:gap-3 sm:p-3 lg:grid-cols-[1.3fr_1fr_1fr_0.7fr_auto]"
           role="search"
           @submit.prevent="search"
         >
-          <label class="rounded-3xl bg-white px-4 py-2.5 text-ink">
+          <label class="col-span-2 rounded-3xl bg-white px-4 py-2.5 text-ink lg:col-span-1">
             <span class="block text-[11px] font-semibold tracking-wide text-muted uppercase"
               >Ville</span
             >
@@ -185,7 +186,7 @@ const total = computed(() => result.value?.meta.total ?? 0)
               class="w-full bg-transparent text-sm font-medium outline-none"
             />
           </label>
-          <button type="submit" class="btn-primary rounded-3xl px-6 sm:col-span-2 lg:col-span-1">
+          <button type="submit" class="btn-primary rounded-3xl px-4 sm:px-6">
             <Search class="size-4" /> Rechercher
           </button>
         </form>

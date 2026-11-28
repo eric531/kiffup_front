@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute, type RouteLocationRaw } from 'vue-router'
-import { Menu, MessagesSquare, X, UserRound, WifiOff } from 'lucide-vue-next'
+import { MessagesSquare, UserRound, WifiOff } from 'lucide-vue-next'
 import BrandLogo from '@/components/BrandLogo.vue'
+import MobileTabBar from '@/components/MobileTabBar.vue'
 import PaymentLogo from '@/components/PaymentLogo.vue'
+import { usePublicTabs } from '@/composables/usePublicTabs'
 import { useAuthStore } from '@/stores/auth'
 import { useMessagingStore } from '@/stores/messaging'
 
@@ -12,7 +14,6 @@ const auth = useAuthStore()
 const messaging = useMessagingStore()
 const route = useRoute()
 const scrolled = ref(false)
-const menuOpen = ref(false)
 
 const onScroll = () => (scrolled.value = window.scrollY > 24)
 onMounted(() => {
@@ -20,10 +21,6 @@ onMounted(() => {
   window.addEventListener('scroll', onScroll, { passive: true })
 })
 onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
-watch(
-  () => route.fullPath,
-  () => (menuOpen.value = false),
-)
 
 const links: { label: string; to: RouteLocationRaw }[] = [
   { label: 'Événements', to: { name: 'home', hash: '#evenements' } },
@@ -40,21 +37,19 @@ const WALLETS = [
   { code: 'djamo', label: 'Djamo' },
 ]
 
-// Visitors and customers: the customer account; partners and staff: their area.
-const accountLink = computed<{ to: RouteLocationRaw; label: string }>(() => {
-  if (auth.isCustomer) return { to: { name: 'account' }, label: 'Mon compte' }
-  if (auth.isAuthenticated) return { to: auth.homeRoute, label: 'Mon espace' }
-  return { to: { name: 'customer-login' }, label: 'Se connecter' }
-})
+const { tabs, accountLink } = usePublicTabs()
 </script>
 
 <template>
-  <div class="flex min-h-dvh flex-col">
+  <div
+    class="flex min-h-dvh flex-col"
+    :style="route.meta.hideTabBar ? { '--tabbar': '0px' } : undefined"
+  >
     <!-- Header: transparent over the dark hero, frosted night glass once scrolled -->
     <header
-      class="fixed inset-x-0 top-0 z-50 transition duration-300"
+      class="fixed inset-x-0 top-0 z-50 pt-[env(safe-area-inset-top)] transition duration-300"
       :class="
-        scrolled || menuOpen || route.meta.solidHeader
+        scrolled || route.meta.solidHeader
           ? 'border-b border-white/10 bg-night-950/80 backdrop-blur-xl'
           : 'bg-transparent'
       "
@@ -93,52 +88,7 @@ const accountLink = computed<{ to: RouteLocationRaw; label: string }>(() => {
             {{ accountLink.label }}
           </RouterLink>
         </nav>
-
-        <RouterLink
-          v-if="auth.isCustomer"
-          :to="{ name: 'customer.messages' }"
-          class="relative ml-auto mr-1 grid size-10 place-items-center rounded-full text-white transition hover:bg-white/10 md:hidden"
-          aria-label="Mes messages"
-        >
-          <MessagesSquare class="size-5" />
-          <span
-            v-if="messaging.unread"
-            class="absolute -top-0.5 -right-0.5 grid min-w-5 place-items-center rounded-full bg-flare-500 px-1 text-[11px] font-bold"
-          >
-            {{ messaging.unread }}
-          </span>
-        </RouterLink>
-        <button
-          class="grid size-10 place-items-center rounded-full text-white transition hover:bg-white/10 md:hidden"
-          :aria-expanded="menuOpen"
-          aria-label="Menu"
-          @click="menuOpen = !menuOpen"
-        >
-          <X v-if="menuOpen" class="size-6" />
-          <Menu v-else class="size-6" />
-        </button>
       </div>
-
-      <Transition
-        enter-active-class="transition duration-200 ease-out"
-        enter-from-class="-translate-y-2 opacity-0"
-        leave-active-class="transition duration-150 ease-in"
-        leave-to-class="-translate-y-2 opacity-0"
-      >
-        <nav v-if="menuOpen" class="container-page flex flex-col gap-1 pb-5 text-white md:hidden">
-          <RouterLink
-            v-for="link in links"
-            :key="link.label"
-            :to="link.to"
-            class="rounded-2xl px-4 py-3 hover:bg-white/10"
-          >
-            {{ link.label }}
-          </RouterLink>
-          <RouterLink :to="accountLink.to" class="btn-light mt-2">
-            {{ accountLink.label }}
-          </RouterLink>
-        </nav>
-      </Transition>
     </header>
 
     <div
@@ -149,7 +99,7 @@ const accountLink = computed<{ to: RouteLocationRaw; label: string }>(() => {
       indisponibles.
     </div>
 
-    <main class="flex-1">
+    <main class="pb-tabbar flex-1">
       <RouterView v-slot="{ Component, route: r }">
         <Transition name="page" mode="out-in">
           <component :is="Component" :key="r.meta.shellKey ?? r.path" />
@@ -158,9 +108,10 @@ const accountLink = computed<{ to: RouteLocationRaw; label: string }>(() => {
     </main>
 
     <!-- Footer -->
+    <!-- On phones the tab bar replaces the footer navigation, as in an app. -->
     <footer
       v-if="!route.meta.hideFooter"
-      class="relative overflow-hidden bg-night-950 text-white/70"
+      class="relative hidden overflow-hidden bg-night-950 text-white/70 md:block"
     >
       <div
         class="pointer-events-none absolute -top-40 left-1/2 h-80 w-[50rem] -translate-x-1/2 rounded-full bg-dusk-600/20 blur-3xl"
@@ -219,5 +170,7 @@ const accountLink = computed<{ to: RouteLocationRaw; label: string }>(() => {
         </div>
       </div>
     </footer>
+
+    <MobileTabBar v-if="!route.meta.hideTabBar" :items="tabs" />
   </div>
 </template>

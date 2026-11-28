@@ -8,7 +8,9 @@ import MessengerLayout from '@/components/messaging/MessengerLayout.vue'
 </script>
 
 <template>
-  <div class="-mx-4 -my-8 h-[calc(100dvh-4rem)] lg:mx-0 lg:-my-4 lg:h-[calc(100dvh-2rem)]">
+  <div
+    class="-mx-4 -my-6 h-[calc(100dvh-3.5rem-env(safe-area-inset-top)-var(--tabbar))] lg:mx-0 lg:-my-4 lg:h-[calc(100dvh-2rem)]"
+  >
     <MessengerLayout
       side="partner"
       title="Messages"

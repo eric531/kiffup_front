@@ -149,6 +149,11 @@ function changeNumber() {
       <RouterLink :to="{ name: 'login' }" class="font-semibold text-white hover:underline">
         Espace partenaire
       </RouterLink>
+      <br />
+      Vous avez un établissement ?
+      <RouterLink :to="{ name: 'become-partner' }" class="font-semibold text-white hover:underline">
+        Devenir partenaire
+      </RouterLink>
     </template>
   </AuthScene>
 </template>

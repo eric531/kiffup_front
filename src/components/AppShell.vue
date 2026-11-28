@@ -1,18 +1,29 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ExternalLink, LogOut, Menu, ShieldCheck, X } from 'lucide-vue-next'
+import { ExternalLink, LogOut, ShieldCheck, X } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
 import BrandLogo from '@/components/BrandLogo.vue'
+import MobileTabBar from '@/components/MobileTabBar.vue'
 import type { NavItem } from '@/types/navigation'
 
+/**
+ * Partner area and back-office. Computer: sidebar. Phone and tablet: compact title bar, the main
+ * destinations in a bottom tab bar (items marked "tab"), the others in a "Plus" sheet — as in an app.
+ */
 const props = defineProps<{ area: string; items: NavItem[] }>()
-const badges = computed(() => props.items.reduce((sum, item) => sum + (item.badge ?? 0), 0))
 
 const auth = useAuthStore()
 const route = useRoute()
 const router = useRouter()
-const menuOpen = ref(false)
+const moreOpen = ref(false)
+
+const tabs = computed(() => {
+  const marked = props.items.filter((item) => item.tab)
+  return (marked.length ? marked : props.items).slice(0, 4)
+})
+const others = computed(() => props.items.filter((item) => !tabs.value.includes(item)))
+const othersBadge = computed(() => others.value.reduce((sum, item) => sum + (item.badge ?? 0), 0))
 
 const initials = computed(() =>
   (auth.user?.name ?? '?')
@@ -24,8 +35,11 @@ const initials = computed(() =>
 
 watch(
   () => route.fullPath,
-  () => (menuOpen.value = false),
+  () => (moreOpen.value = false),
 )
+
+const active = (item: NavItem, href: string, exact: boolean) =>
+  item.prefix ? route.path.startsWith(href) : exact
 
 async function logout() {
   await auth.logout()
@@ -34,55 +48,34 @@ async function logout() {
 </script>
 
 <template>
-  <div class="min-h-dvh bg-surface lg:flex">
-    <!-- Mobile top bar -->
+  <div
+    class="tabbar-until-lg min-h-dvh bg-surface lg:flex"
+    :style="route.meta.hideTabBar ? { '--tabbar': '0px' } : undefined"
+  >
+    <!-- Phone and tablet: compact title bar -->
     <header
-      class="sticky top-0 z-40 flex h-16 items-center justify-between bg-night-950 px-4 text-white lg:hidden"
+      class="sticky top-0 z-30 bg-night-950 pt-[env(safe-area-inset-top)] text-white lg:hidden"
     >
-      <span class="flex items-center gap-2">
-        <BrandLogo />
-        <span class="chip bg-white/10 text-xs text-white/80">{{ area }}</span>
-      </span>
-      <button
-        class="btn-glass relative size-10 p-0"
-        :aria-expanded="menuOpen"
-        aria-label="Menu"
-        @click="menuOpen = !menuOpen"
-      >
-        <component :is="menuOpen ? X : Menu" class="size-5" />
-        <span
-          v-if="!menuOpen && badges"
-          class="absolute -top-1 -right-1 grid min-w-5 place-items-center rounded-full bg-flare-500 px-1 text-[11px] font-bold"
-        >
-          {{ badges }}
+      <div class="flex h-14 items-center gap-3 px-4">
+        <RouterLink :to="tabs[0]?.to ?? { name: 'home' }" aria-label="Accueil de l’espace">
+          <BrandLogo />
+        </RouterLink>
+        <span class="min-w-0 flex-1 truncate text-right text-sm font-semibold text-white/80">
+          {{ route.meta.title ?? area }}
         </span>
-      </button>
+      </div>
     </header>
 
-    <Transition
-      enter-active-class="transition duration-200"
-      enter-from-class="opacity-0"
-      leave-active-class="transition duration-150"
-      leave-to-class="opacity-0"
-    >
-      <div
-        v-if="menuOpen"
-        class="fixed inset-0 z-40 bg-night-950/60 backdrop-blur-sm lg:hidden"
-        @click="menuOpen = false"
-      />
-    </Transition>
-
-    <!-- Sidebar (drawer on mobile) -->
+    <!-- Computer: sidebar -->
     <aside
-      class="fixed inset-y-0 left-0 z-50 flex w-72 flex-col overflow-hidden bg-night-950 text-white transition-transform duration-300 ease-out lg:sticky lg:top-0 lg:h-dvh lg:w-64 lg:translate-x-0"
-      :class="menuOpen ? 'translate-x-0' : '-translate-x-full'"
+      class="relative hidden w-64 shrink-0 flex-col overflow-hidden bg-night-950 text-white lg:sticky lg:top-0 lg:flex lg:h-dvh"
     >
       <!-- Glow -->
       <div
         class="pointer-events-none absolute -top-24 -left-20 size-64 rounded-full bg-flare-500/25 blur-3xl"
       />
       <div
-        class="pointer-events-none absolute -bottom-28 -right-24 size-64 rounded-full bg-brand-500/20 blur-3xl"
+        class="pointer-events-none absolute -right-24 -bottom-28 size-64 rounded-full bg-brand-500/20 blur-3xl"
       />
 
       <div class="relative flex h-16 items-center gap-2 px-5">
@@ -104,27 +97,21 @@ async function logout() {
             :href="href"
             class="group relative flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium transition"
             :class="
-              (item.prefix ? route.path.startsWith(href) : isExactActive)
+              active(item, href, isExactActive)
                 ? 'bg-white/10 text-white'
                 : 'text-white/65 hover:bg-white/5 hover:text-white'
             "
-            :aria-current="
-              (item.prefix ? route.path.startsWith(href) : isExactActive) ? 'page' : undefined
-            "
+            :aria-current="active(item, href, isExactActive) ? 'page' : undefined"
             @click="navigate"
           >
             <span
               class="absolute top-1/2 left-0 h-6 w-1 -translate-y-1/2 rounded-full bg-sunset transition-opacity"
-              :class="
-                (item.prefix ? route.path.startsWith(href) : isExactActive)
-                  ? 'opacity-100'
-                  : 'opacity-0'
-              "
+              :class="active(item, href, isExactActive) ? 'opacity-100' : 'opacity-0'"
             />
             <span
               class="grid size-8 place-items-center rounded-xl transition"
               :class="
-                (item.prefix ? route.path.startsWith(href) : isExactActive)
+                active(item, href, isExactActive)
                   ? 'bg-sunset shadow-glow'
                   : 'bg-white/5 group-hover:bg-white/10'
               "
@@ -182,12 +169,122 @@ async function logout() {
       </div>
     </aside>
 
-    <main class="mx-auto w-full max-w-6xl min-w-0 flex-1 px-4 py-8 lg:px-10">
+    <main
+      class="mx-auto w-full max-w-6xl min-w-0 flex-1 px-4 pt-6 pb-[calc(1.5rem+var(--tabbar))] lg:px-10 lg:py-8"
+    >
       <RouterView v-slot="{ Component: page, route: r }">
         <Transition name="page" mode="out-in">
           <component :is="page" :key="r.meta.shellKey ?? r.path" />
         </Transition>
       </RouterView>
     </main>
+
+    <!-- Phone and tablet: "Plus" sheet with the other destinations -->
+    <Transition
+      enter-active-class="transition duration-200"
+      enter-from-class="opacity-0"
+      leave-active-class="transition duration-150"
+      leave-to-class="opacity-0"
+    >
+      <div
+        v-if="moreOpen"
+        class="fixed inset-0 z-40 bg-night-950/60 backdrop-blur-sm lg:hidden"
+        @click="moreOpen = false"
+      />
+    </Transition>
+    <Transition
+      enter-active-class="transition duration-300 ease-out"
+      enter-from-class="translate-y-full"
+      leave-active-class="transition duration-200 ease-in"
+      leave-to-class="translate-y-full"
+    >
+      <section
+        v-if="moreOpen"
+        class="fixed inset-x-0 bottom-0 z-50 max-h-[85dvh] overflow-y-auto rounded-t-4xl bg-white px-4 pt-3 pb-[calc(1.5rem+env(safe-area-inset-bottom))] shadow-lift lg:hidden"
+        role="dialog"
+        aria-modal="true"
+        :aria-label="area"
+      >
+        <div class="mx-auto mb-3 h-1.5 w-10 rounded-full bg-stone-300" />
+        <div class="mb-4 flex items-center gap-3">
+          <span
+            class="grid size-11 shrink-0 place-items-center rounded-full bg-sunset text-sm font-bold text-white"
+            >{{ initials }}</span
+          >
+          <div class="min-w-0 flex-1">
+            <p class="truncate font-semibold">{{ auth.user?.name }}</p>
+            <p class="truncate text-xs text-muted">{{ area }}</p>
+          </div>
+          <button
+            type="button"
+            class="grid size-10 place-items-center rounded-full bg-stone-100"
+            aria-label="Fermer"
+            @click="moreOpen = false"
+          >
+            <X class="size-5" />
+          </button>
+        </div>
+
+        <nav class="grid grid-cols-3 gap-2 sm:grid-cols-4">
+          <RouterLink
+            v-for="item in others"
+            :key="item.label"
+            v-slot="{ href, navigate, isExactActive }"
+            :to="item.to"
+            custom
+          >
+            <a
+              :href="href"
+              class="relative flex flex-col items-center gap-2 rounded-3xl p-3 text-center text-xs font-semibold transition active:scale-95"
+              :class="
+                active(item, href, isExactActive) ? 'bg-brand-50 text-brand-700' : 'bg-surface'
+              "
+              @click="navigate"
+            >
+              <span
+                class="grid size-11 place-items-center rounded-2xl text-white"
+                :class="active(item, href, isExactActive) ? 'bg-sunset' : 'bg-night-900'"
+              >
+                <component :is="item.icon" v-if="item.icon" class="size-5" />
+              </span>
+              {{ item.label }}
+              <span v-if="item.badge" class="tabbar-badge top-2 right-2">{{
+                item.badge > 99 ? '99+' : item.badge
+              }}</span>
+            </a>
+          </RouterLink>
+        </nav>
+
+        <div class="mt-4 space-y-1 border-t border-stone-100 pt-3 text-sm font-medium">
+          <RouterLink
+            :to="{ name: 'account.security' }"
+            class="flex items-center gap-3 rounded-2xl px-3 py-3 active:bg-stone-100"
+          >
+            <ShieldCheck class="size-5 text-stone-500" /> Sécurité du compte
+          </RouterLink>
+          <RouterLink
+            :to="{ name: 'home' }"
+            class="flex items-center gap-3 rounded-2xl px-3 py-3 active:bg-stone-100"
+          >
+            <ExternalLink class="size-5 text-stone-500" /> Voir le site
+          </RouterLink>
+          <button
+            type="button"
+            class="flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-red-700 active:bg-red-50"
+            @click="logout"
+          >
+            <LogOut class="size-5" /> Se déconnecter
+          </button>
+        </div>
+      </section>
+    </Transition>
+
+    <MobileTabBar
+      v-if="!route.meta.hideTabBar"
+      :items="tabs"
+      until="lg"
+      :more="{ label: 'Plus', badge: othersBadge, open: moreOpen }"
+      @more="moreOpen = !moreOpen"
+    />
   </div>
 </template>

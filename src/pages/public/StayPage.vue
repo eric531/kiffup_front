@@ -23,9 +23,12 @@ import ListingGallery from '@/components/ListingGallery.vue'
 import FavoriteButton from '@/components/FavoriteButton.vue'
 import AvailabilityCalendar from '@/components/AvailabilityCalendar.vue'
 import TariffBookingCard from '@/components/TariffBookingCard.vue'
+import StickyBookingBar from '@/components/StickyBookingBar.vue'
 import {
   LISTING_TYPE_LABELS,
+  cheapestTariff,
   durationLabel,
+  perUnitSuffix,
   type EventListing,
   type Listing,
   type PricingUnit,
@@ -100,6 +103,8 @@ const minStay = computed(() =>
 )
 
 useHead({ title: computed(() => listing.value?.title) })
+// Phones: price and "Réserver" pinned at the bottom of the screen.
+const cheapest = computed(() => (listing.value ? cheapestTariff(listing.value) : null))
 const TypeIcon = computed(() => (listing.value ? LISTING_TYPE_ICONS[listing.value.type] : null))
 
 /**
@@ -348,7 +353,7 @@ watch(() => props.listingId, load, { immediate: true })
       </div>
 
       <!-- Booking card: per night, per day (no event package here) -->
-      <aside class="lg:sticky lg:top-24 lg:self-start">
+      <aside id="reserver" class="scroll-mt-20 lg:sticky lg:top-24 lg:self-start">
         <TariffBookingCard
           v-model:starts-on="startsOn"
           v-model:ends-on="endsOn"
@@ -358,5 +363,12 @@ watch(() => props.listingId, load, { immediate: true })
         />
       </aside>
     </div>
+
+    <StickyBookingBar
+      v-if="cheapest"
+      :price="cheapest.price.customer_price"
+      :unit="perUnitSuffix(cheapest.unit)"
+      target="reserver"
+    />
   </div>
 </template>
